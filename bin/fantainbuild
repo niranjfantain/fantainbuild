@@ -1,0 +1,109 @@
+#!/bin/bash
+
+
+# Fantain Automation Build Script
+
+# Variables used in common
+newline='
+'
+
+# Help Function to make the fantainbuild sucessful
+function help {
+	echo '
+ERROR: These paramters are needed to build fantain application
+
+	      	Try fantainbuild 
+			-t {android | website} 
+			-i {fantain | srh }
+			-s {dev | test | prod}	
+			-u {true | false}
+			-g {true | false}
+			-v {version number}
+			-c {version code number}
+
+Example
+------- 
+fantainbuild -t android -i fantain -s dev -u true -g true -v 3.0 -vc 1
+
+For Detailed description of the parameters, try man fantainbuild
+'
+}
+
+# Tigerring Help Function when there is no paramter
+if test $# -eq 0; then
+	help
+	exit 0
+fi
+
+# Gettting the parameters from the command 
+while getopts t:i:s:u:g:v:c: option
+do
+        case "${option}"
+        in
+                t) if [ ${OPTARG,,} = 'android' ] || [ ${OPTARG,,} = 'website' ]; then
+			platform=${OPTARG,,}
+		   else
+			help 
+			exit
+	    	   fi;;
+                i) if [ ${OPTARG,,} = 'fantain' ] || [ ${OPTARG,,} = 'srh' ]; then
+                        installation=${OPTARG,,}
+                   else 
+			help 
+			exit
+                   fi;;
+                s) if [ ${OPTARG,,} = 'dev' ] || [ ${OPTARG,,} = 'test' ] || [ ${OPTARG,,} = 'prod' ]; then
+                        instance=${OPTARG,,}
+                   else 
+			help 
+			exit
+                   fi;;
+                u) if [ ${OPTARG,,} = 'true' ] || [ ${OPTARG,,} = 'false' ]; then
+                        uglify=${OPTARG,,}
+                   else 
+			help 
+			exit
+                   fi;;
+		g) if [ ${OPTARG,,} = 'true' ] || [ ${OPTARG,,} = 'false' ]; then
+                        gittag=${OPTARG,,}
+                   else 
+			help 
+			exit
+                   fi;;
+	     	v) if [ ${OPTARG} ]; then
+                        version=${OPTARG}
+                   else 
+			help 
+			exit
+                   fi;;
+	        c) if [ ${OPTARG} ]; then
+                        versioncode=${OPTARG}
+                   else 
+			help 
+			exit
+                   fi;;
+		*) help
+		   exit
+        esac
+done
+
+# Checking whether all parameters are set to build the application
+if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z $gittag ] || [ -z $version ] || [ -z $versioncode ]; then
+	help
+	exit
+else
+	echo "${newline}Hurray!! All Parameters are Good"
+	while true; 
+	do
+    		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
+    			case $yn in
+        			[Yy]* ) mkdir '../apkdir/'
+        				echo "${newline}Created a directory and named as" $(date +"%d%m%Y%k%M%S")
+ 
+					break;;
+        			[Nn]* ) echo "${newline}Please go to your root directory and try again.Bubie.."
+					exit;;
+        	    		    * ) echo "${newline}Please enter y or n";;
+   		 esac
+	done
+fi
