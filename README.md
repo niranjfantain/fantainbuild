@@ -13,7 +13,7 @@ Steps to use
 
 3.) Add the below snippet to the end of your bash file
 
-      export PATH=$PATH:{your-project-path}
+      export PATH=$PATH:{your-project-path}/bin
 
 4.) Refresh the bash file using the below command,
 
