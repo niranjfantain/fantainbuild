@@ -19,5 +19,5 @@ Steps to use
 
       source {your-path-to-bash-file}
       
-5.) Go to your porject root Directory and Create the build the application.
+5.) Go to your porject root Directory and build the application
 
