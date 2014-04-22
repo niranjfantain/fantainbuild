@@ -6,6 +6,9 @@
 # Variables used in common
 newline='
 '
+datetime=$(date +"%d-%m-%Y-%k%M%S")
+apkdir=$(dirname $0)
+
 
 # Help Function to make the fantainbuild sucessful
 function help {
@@ -92,13 +95,14 @@ if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify 
 	help
 	exit
 else
+	# All set Need to Transfer the Files from working directory
 	echo "${newline}Hurray!! All Parameters are Good"
 	while true; 
 	do
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
-        			[Yy]* ) mkdir '../apkdir/'
-        				echo "${newline}Created a directory and named as" $(date +"%d%m%Y%k%M%S")
+        			[Yy]* ) mkdir -p "$apkdir/apkdir/$datetime"
+        				echo "${newline}Your new build application will be in this path ${newline} $apkdir/apkdir/$datetime"
  
 					break;;
         			[Nn]* ) echo "${newline}Please go to your root directory and try again.Bubie.."
