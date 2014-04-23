@@ -6,7 +6,7 @@
 fantainbuild  \- build source code as platform specific application.
 
 .SH SYNOPSIS
-fantainbuild -t {android | website} -i {fantain | srh} -s {dev | test | prod} -u {true | false} -g {true | false} -v {version number} -c {version code number} 
+fantainbuild -t {android | website} -i {fantain | srh} -s {dev | test | prod} -u {true | false} -g {true | false} -n {gittag name} -d {gittag description} -v {version number} -c {version code number} 
  
 .SH PARAMETERS AND ITS DESCRIPTIONS
 .SH -t [MANDATORY]
