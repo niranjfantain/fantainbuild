@@ -22,12 +22,19 @@ ERROR: These paramters are needed to build fantain application
 			-s {dev | test | prod}	
 			-u {true | false}
 			-g {true | false}
+			   -n { gittag name }
+			   -d { gittag description }
 			-v {version number}
 			-c {version code number}
 
 Example
 ------- 
-fantainbuild -t android -i fantain -s dev -u true -g true -v 3.0 -c 1
+
+If -g is set to false
+fantainbuild -t android -i fantain -s dev -u true -g false -v 3.0 -c 1
+
+If -g is set to  true
+fantainbuild -t android -i fantain -s dev -u true -g true -n v1.0 -d "my git desc" -v 3.0 -c 1
 
 For Detailed description of the parameters, try man fantainbuild
 '
@@ -56,7 +63,7 @@ if test $# -eq 0; then
 fi
 
 # Gettting the parameters from the command 
-while getopts t:i:s:u:g:v:c: option
+while getopts t:i:s:u:n:d:g:v:c: option
 do
         case "${option}"
         in
@@ -84,8 +91,32 @@ do
 			help 
 			exit
                    fi;;
-		g) if [ ${OPTARG,,} = 'true' ] || [ ${OPTARG,,} = 'false' ]; then
-                        gittag=${OPTARG,,}
+		n) if [ ${OPTARG} ]; then
+                        gittagname=${OPTARG,,}
+                   else
+                        help
+                        exit
+                   fi;;
+		d) if [ ${OPTARG} ]; then
+                        gittagdesc=${OPTARG,,}
+                   else
+                        help
+                        exit
+                   fi;;		
+		g) if [ ${OPTARG,,} = 'true' ]; then
+                      if [ -z $gittagname ] || [ -z $gittagdesc ]; then
+			help
+			exit
+		      else
+			gittag=${OPTARG,,}
+		      fi   
+	           elif [ ${OPTARG,,} = 'false' ]; then
+		      if [ -z $gittagname ] || [ -z $gittagdesc ]; then
+                        echo "${newline}WARNING: -g is set to false. -d -n  are ignored for smooth build."
+			gittag=${OPTARG,,}
+		      else
+			gittag=${OPTARG,,}
+		   fi
                    else 
 			help 
 			exit
@@ -109,7 +140,7 @@ done
 
 # Checking whether all parameters are set to build the application
 if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z $gittag ] || [ -z $version ] || [ -z $versioncode ]; then
-	help
+	help		
 	exit
 else
 	# All set Need to Transfer the Files from working directory

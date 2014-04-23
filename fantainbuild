@@ -18,7 +18,11 @@ Intance to mention the code is in dev / test / prod stage.
 .SH -u [MANDATORY]
 Uglify the code, a javascript to make the code more crisp.
 .SH -g [MANDATORY]
-Gitgist to add a small note to Git for reference purpose.
+Gittag to add a small note to Git for reference purpose.
+.SH -n [DEPENDANT MANDATORY]
+If Gittag is set to true, then the gitname must be given.
+.SH -d [DEPENDANT MANDATORY]
+If Gittag is set to true, then the gitdescription must be given.
 .SH -v [MANDATORY]
 Version of the codebase realease.
 .SH -c [MANDATORY]
