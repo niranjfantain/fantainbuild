@@ -4,13 +4,14 @@
 # Fantain Automation Build Script
 
 # Variables used in common
+
 newline='
 '
 datetime=$(date +"%d-%m-%Y-%k%M%S")
-apkdir=$(dirname $0)
+apkdir="$(dirname $0)/apkdir/$datetime" 
 
-
-# Help Function to make the fantainbuild sucessful
+#Functions
+# Help 
 function help {
 	echo '
 ERROR: These paramters are needed to build fantain application
@@ -26,11 +27,27 @@ ERROR: These paramters are needed to build fantain application
 
 Example
 ------- 
-fantainbuild -t android -i fantain -s dev -u true -g true -v 3.0 -vc 1
+fantainbuild -t android -i fantain -s dev -u true -g true -v 3.0 -c 1
 
 For Detailed description of the parameters, try man fantainbuild
 '
 }
+# Create a new build folder and copy the codebase to it
+function newcodebase {
+	mkdir -p "$apkdir"
+	sudo rsync -v -a  . $apkdir
+	echo "${newline}Your new codebase is in this location  ${newline} $apkdir"
+}
+# Check for important files in the new codebase
+
+function checkfile() {
+	if [ -f $1 ] && [ -f $2 ]; then
+		echo "${newline}Good to Go..."
+	else
+		echo "${newline}Files Missing. Go to your root directory and try again" 
+	fi
+}
+
 
 # Tigerring Help Function when there is no paramter
 if test $# -eq 0; then
@@ -101,9 +118,8 @@ else
 	do
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
-        			[Yy]* ) mkdir -p "$apkdir/apkdir/$datetime"
-        				echo "${newline}Your new build application will be in this path ${newline} $apkdir/apkdir/$datetime"
- 
+        			[Yy]* ) newcodebase
+					checkfile fantain-build.js config.xml
 					break;;
         			[Nn]* ) echo "${newline}Please go to your root directory and try again.Bubie.."
 					exit;;
