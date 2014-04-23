@@ -1,16 +1,38 @@
-#!/bin/bash
- 
- 
 # Fantain Automation Build Script
 
-# Variables used in common
 
+#!/bin/bash
+
+#Matrix Table to set the environment for build to be smooth
+#--------------------------------------------------------------------------------
+#                WEBSITE                                  ANDROID
+#--------------------------------------------------------------------------------
+#       FANTAIN               SRH                 FANTAIN              SRH
+#--------------------------------------------------------------------------------
+#DEV      NA                   NA               $devapkfantain      $devapksrh
+#--------------------------------------------------------------------------------
+#TEST     NA                   NA                  NA                  NA
+#--------------------------------------------------------------------------------
+#PROD     NA                   NA               $prodapkfantain     $prodapksrh
+#--------------------------------------------------------------------------------
+  
+# Variables 
+# common
 newline='
 '
 datetime=$(date +"%d-%m-%Y-%k%M%S")
-apkdir="$(dirname $0)/apkdir/$datetime" 
+apkdir="$(dirname $0)/buildapplication/$datetime" 
+# Environment 
+devapkfantain="com.fantain.fantain"
+prodapkfantain="com.fantain.co.mainapp"
+devapksrh="com.fantain.srhdev"
+prodapksrh="com.fantain.srh"
+# Search strings
+deployinstallation="DEPLOYINSTALLATION"
+deployinstance="DEPLOYINSTANCE"
 
-#Functions
+
+# Functions
 # Help 
 function help {
 	echo '
@@ -44,24 +66,63 @@ function newcodebase {
 	mkdir -p "$apkdir"
 	sudo rsync -v -a  . $apkdir
 	echo "${newline}Your new codebase is in this location  ${newline} $apkdir"
+	# Files Required to build the application with the complete path
+	configxml=$apkdir/config.xml
+	fantainEnvjs=$apkdir/www/js/f/fantainEnv.js
+	AndroidManifestxml=$apkdir/platforms/android/AndroidManifest.xml
 }
 # Check for important files in the new codebase
-
 function checkfile() {
-	if [ -f $1 ] && [ -f $2 ]; then
-		echo "${newline}Good to Go..."
+	if [ -f $1 ] && [ -f $2 ] && [ -f $s3 ]; then
+		echo "${newline}Important Files that are needed to create build seems to be good"
 	else
 		echo "${newline}Files Missing. Go to your root directory and try again" 
 	fi
 }
+# Find the Text and Replace with the platform specific values
+function searchandreplace() {
+	search=$2
+	replace=$3
+	search1=$4
+	replace1=$5
+  	  grep "$search" $1 &> /dev/null
+  	  if [ $? -ne 0 ]; then
+    		echo "Search string not found in $1!"
+  	  else
+    		sed -i "s/$search/$replace/" $1
+		echo "${newline}Environment is set to play!!"
+  	  fi
+	  grep "$search1" $1 &> /dev/null
+          if [ $? -ne 0 ]; then
+                echo "Search string not found in $1!"
+          else
+                sed -i "s/$search1/$replace1/" $1
+                echo "${newline}Environment is set to play!!"
+          fi
+}
+# Build Application for website
+function buildwebsite {
+	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance	  
+	cd $apkdir
+        echo "${newline}Fantain Build is Started"
+	node r.js -o fantain-build.js 
+	echo "${newline}Play is set and will be ready on Google Chrome in few seconds"
+	echo "${newline}Make sure that node server is up and running"
+	google-chrome www.local.fantain.com:8080
+}
+# Build APK for mobiles
+function buildapk {
+	echo "${newline}Hai Android"
+}
 
 
-# Tigerring Help Function when there is no paramter
+# Trigerring Help Function when there is no paramter
 if test $# -eq 0; then
 	help
 	exit 0
 fi
 
+# The build kicksoff from here
 # Gettting the parameters from the command 
 while getopts t:i:s:u:n:d:g:v:c: option
 do
@@ -111,10 +172,11 @@ do
 			gittag=${OPTARG,,}
 		      fi   
 	           elif [ ${OPTARG,,} = 'false' ]; then
-		      if [ -z $gittagname ] || [ -z $gittagdesc ]; then
-                        echo "${newline}WARNING: -g is set to false. -d -n  are ignored for smooth build."
+		      if [ -z $gittagname ] && [ -z $gittagdesc ]; then
 			gittag=${OPTARG,,}
 		      else
+			echo "${newline}WARNING: -g is set to false. -d -n  are ignored for smooth build." 
+			echo "${newline}Cleaning you command..." 
 			gittag=${OPTARG,,}
 		   fi
                    else 
@@ -137,7 +199,6 @@ do
 		   exit
         esac
 done
-
 # Checking whether all parameters are set to build the application
 if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z $gittag ] || [ -z $version ] || [ -z $versioncode ]; then
 	help		
@@ -150,7 +211,12 @@ else
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
         			[Yy]* ) newcodebase
-					checkfile fantain-build.js config.xml
+					checkfile $configxml $fantainEnvjs $AndroidManifestxml
+					if [ $platform = 'website' ]; then 
+						buildwebsite
+					else
+						buildapk
+					fi  
 					break;;
         			[Nn]* ) echo "${newline}Please go to your root directory and try again.Bubie.."
 					exit;;
