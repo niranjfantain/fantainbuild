@@ -1,0 +1,29 @@
+.\" Manpage for fantainbuild.
+
+.TH man 8 "23 Apr 2014" "1.0" "fantainbuild man page"
+
+.SH NAME
+fantainbuild  \- build source code as platform specific application.
+
+.SH SYNOPSIS
+fantainbuild -t {android | website} -i {fantain | srh} -s {dev | test | prod} -u {true | false} -g {true | false} -v {version number} -c {version code number} 
+ 
+.SH PARAMETERS AND ITS DESCRIPTIONS
+.SH -t [MANDATORY]
+Type of the platform, to which platform your application must work.
+.SH -i [MANDATORY]
+Installation to which client the code is about to get deployed.
+.SH -s [MANDATORY]
+Intance to mention the code is in dev / test / prod stage.
+.SH -u [MANDATORY]
+Uglify the code, a javascript to make the code more crisp.
+.SH -g [MANDATORY]
+Gitgist to add a small note to Git for reference purpose.
+.SH -v [MANDATORY]
+Version of the codebase realease.
+.SH -c [MANDATORY]
+Version code number of the codebase.
+
+.SH SEE ALSO
+
+
