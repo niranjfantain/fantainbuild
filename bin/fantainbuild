@@ -213,11 +213,14 @@ else
 	do
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
-        			[Yy]* ) newcodebase
+        			[Yy]* ) # Codebase moved to a new location for safety
+					newcodebase
+					# Gittagging done for the new codebase
 					if [ $gittag = 'true' ]; then
 						cd $apkdir
 						sudo git tag -a $gittagname -m $gittagdesc
 					fi
+					# Check the important files which are need to build the application
 					checkfile $configxml $fantainEnvjs $AndroidManifestxml
 					if [ $platform = 'website' ]; then 
 						buildwebsite
@@ -225,9 +228,11 @@ else
 						buildapk
 					fi  
 					break;;
-        			[Nn]* ) echo "${newline}Please go to your root directory and try again.Bubie.."
+        			[Nn]* ) # To make the user run the fantainbuild from the root directory
+					echo "${newline}Please go to your root directory and try again.Bubie.."
 					exit;;
-        	    		    * ) echo "${newline}Please enter y or n";;
+        	    		    * ) # To handle the wrong input given by the user
+					echo "${newline}Please enter y or n";;
    		 esac
 	done
 fi
