@@ -145,7 +145,7 @@ do
                    fi;;
                 s) if [ ${OPTARG,,} = 'dev' ] || [ ${OPTARG,,} = 'test' ] || [ ${OPTARG,,} = 'prod' ]; then
                         instance=${OPTARG,,}
-                   else 
+                   else
 			help 
 			exit
                    fi;;
@@ -214,6 +214,10 @@ else
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
         			[Yy]* ) newcodebase
+					if [ $gittag = 'true' ]; then
+						cd $apkdir
+						sudo git tag -a $gittagname -m $gittagdesc
+					fi
 					checkfile $configxml $fantainEnvjs $AndroidManifestxml
 					if [ $platform = 'website' ]; then 
 						buildwebsite
