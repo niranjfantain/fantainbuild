@@ -38,7 +38,11 @@ Prerequesties
 =============
 
 1.) In fantainEnv.js make sure that installation=DEPLOYINSTALLATION
+
 2.) In fantainEnv.js make sure that env=DEPLOYINSTANCE
+
 3.) In config.xml make sure that id=DEPLOYID
+
 4.) In config.xml make sure that version=DEPLOYVERSION
+
 5.) In AndroidManifest.xml make sure that versioncode=DEPLOYVERSIONCODE
