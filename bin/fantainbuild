@@ -69,6 +69,7 @@ function newcodebase {
 	# Files Required to build the application with the complete path
 	configxml=$apkdir/config.xml
 	fantainEnvjs=$apkdir/www/js/f/fantainEnv.js
+	serverjs=$apkdir/server.js
 	AndroidManifestxml=$apkdir/platforms/android/AndroidManifest.xml
 }
 # Check for important files in the new codebase
@@ -102,13 +103,15 @@ function searchandreplace() {
 }
 # Build Application for website
 function buildwebsite {
-	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance	  
+	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
+	searchandreplace $serverjs "8080" "9080"	  
 	cd $apkdir
-        echo "${newline}Fantain Build is Started"
-	node r.js -o fantain-build.js 
-	echo "${newline}Play is set and will be ready on Google Chrome in few seconds"
 	echo "${newline}Make sure that node server is up and running"
-	google-chrome www.local.fantain.com:8080
+	echo "${newline}Make sure that you have compiled compass"
+        echo "${newline}Fantain Build is Started"
+	node r.js -o fantain-build.js
+	echo "${newline}Play is set and you can view it using 9080 portnumber"
+	node server.js
 }
 # Build APK for mobiles
 function buildapk {
