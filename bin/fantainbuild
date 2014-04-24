@@ -30,6 +30,9 @@ prodapksrh="com.fantain.srh"
 # Search strings
 deployinstallation="DEPLOYINSTALLATION"
 deployinstance="DEPLOYINSTANCE"
+deployid="DEPLOYID"
+deployversion="DEPLOYVERSION"
+deployversioncode="DEPLOYVERSIONCODE"
 
 
 # Functions
@@ -91,19 +94,18 @@ function searchandreplace() {
     		echo "Search string not found in $1!"
   	  else
     		sed -i "s/$search/$replace/" $1
-		echo "${newline}Environment is set to play!!"
   	  fi
 	  grep "$search1" $1 &> /dev/null
           if [ $? -ne 0 ]; then
                 echo "Search string not found in $1!"
           else
                 sed -i "s/$search1/$replace1/" $1
-                echo "${newline}Environment is set to play!!"
           fi
 }
 # Build Application for website
 function buildwebsite {
 	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
+	echo "${newline}Enivronments are set as per your needs"
 	searchandreplace $serverjs "8080" "9080"	  
 	cd $apkdir
 	echo "${newline}Make sure that node server is up and running"
@@ -115,7 +117,35 @@ function buildwebsite {
 }
 # Build APK for mobiles
 function buildapk {
-	echo "${newline}Hai Android"
+	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
+	searchandreplace $configxml $deployversion $version
+	searchandreplace $AndroidManifestxml $deployversioncode $versioncode
+	if [ $instance = 'dev' ]; then
+		if [ $installation = 'fantain' ]; then
+			searchandreplace $configxml $deployid $devapkfantain 
+		else
+			searchandreplace $configxml $deployid $devapksrh
+		fi
+	elif [ $instance = 'prod' ]; then
+                if [ $installation = 'fantain' ]; then
+                        searchandreplace $configxml $deployid $prodapkfantain
+                else
+                        searchandreplace $configxml $deployid $prodapksrh
+                fi
+	else
+		if [ $installation = 'fantain' ]; then
+                        echo "${newline}This installation under contruction.Try again to get your APK"
+			exit 
+                else
+                        echo "${newline}This installation under contruction.Try again to get your APK" 
+			exit
+                fi
+	fi
+	echo "${newline}Enivronments are set as per your needs"
+	cd $apkdir
+	echo "${newline}APK Build process started"
+	cordova build
+	echo "${newline}Get your new APK at $apkdir/platforms/android/ant-build/"
 }
 
 
