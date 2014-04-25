@@ -21,18 +21,20 @@
 newline='
 '
 datetime=$(date +"%d-%m-%Y-%k%M%S")
-apkdir="$(dirname $0)/buildapplication/$datetime" 
+basedir="$(dirname $0)/buildapplication"
+websitedirectory="$basedir/website"
+mobiledirectory="$basedir/apk"
 # Environment 
 devapkfantain="com.fantain.fantain"
-prodapkfantain="com.fantain.co.mainapp"
+prodapkfantain="com.fantain.comainapp"
 devapksrh="com.fantain.srhdev"
 prodapksrh="com.fantain.srh"
 # Search strings
-deployinstallation="DEPLOYINSTALLATION"
-deployinstance="DEPLOYINSTANCE"
-deployid="DEPLOYID"
-deployversion="DEPLOYVERSION"
-deployversioncode="DEPLOYVERSIONCODE"
+deployinstallation="$DEPLOYINSTALLATION$"
+deployinstance="$DEPLOYINSTANCE$"
+deployid="$DEPLOYID$"
+deployversion="$DEPLOYVERSION$"
+deployversioncode="$DEPLOYVERSIONCODE$"
 
 
 # Functions
@@ -59,21 +61,23 @@ If -g is set to false
 fantainbuild -t android -i fantain -s dev -u true -g false -v 3.0 -c 1
 
 If -g is set to  true
-fantainbuild -t android -i fantain -s dev -u true -g true -n v1.0 -d "my git desc" -v 3.0 -c 1
+fantainbuild -t android -i fantain -s dev -u true -g true -n v1.0 -d "my-git-desc" -v 3.0 -c 1
 
 For Detailed description of the parameters, try man fantainbuild
 '
 }
 # Create a new build folder and copy the codebase to it
 function newcodebase {
-	mkdir -p "$apkdir"
-	sudo rsync -v -a  . $apkdir
-	echo "${newline}Your new codebase is in this location  ${newline} $apkdir"
+  	if [ "$(ls -A $websitedirectory)" ]; then
+              	sudo rsync --update  . $websitedirectory
+        else
+		sudo rsync -v -a  . $websitedirectory
+	fi
+	echo "${newline}Your new codebase is in this location ${newline} $websitedirectory"
 	# Files Required to build the application with the complete path
-	configxml=$apkdir/config.xml
-	fantainEnvjs=$apkdir/www/js/f/fantainEnv.js
-	serverjs=$apkdir/server.js
-	AndroidManifestxml=$apkdir/platforms/android/AndroidManifest.xml
+	configxml=$websitedirectory/config.xml
+	fantainEnvjs=$websitedirectory/www/js/f/fantainEnv.js
+	AndroidManifestxml=$websitedirectory/platforms/android/AndroidManifest.xml
 }
 # Check for important files in the new codebase
 function checkfile() {
@@ -105,14 +109,17 @@ function searchandreplace() {
 # Build Application for website
 function buildwebsite {
 	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
-	echo "${newline}Enivronments are set as per your needs"
-	searchandreplace $serverjs "8080" "9080"	  
-	cd $apkdir
-	echo "${newline}Make sure that node server is up and running"
-	echo "${newline}Make sure that you have compiled compass"
+	echo "${newline}Enivronments are set as per your needs"	  
+	cd $websitedirectory
         echo "${newline}Fantain Build is Started"
 	node r.js -o fantain-build.js
-	echo "${newline}Play is set and you can view it using 9080 portnumber"
+	echo "${newline}Checking Node server status"
+	nodestatus=$(pgrep node)
+	if [ ! -z $nodestatus ]; then
+         	kill -9 $nodestatus
+	fi
+	echo "${newline}Node Server is up and running"
+	echo "${newline}Play is set please view it in your browser"
 	node server.js
 }
 # Build APK for mobiles
@@ -142,10 +149,13 @@ function buildapk {
                 fi
 	fi
 	echo "${newline}Enivronments are set as per your needs"
-	cd $apkdir
+	if [ ! -d $mobiledirectory ]; then
+                mkdir -p $mobiledirectory
+        fi
+	cd $mobiledirectory
 	echo "${newline}APK Build process started"
 	cordova build
-	echo "${newline}Get your new APK at $apkdir/platforms/android/ant-build/"
+	echo "${newline}Get your new APK at $mobiledirectory"
 }
 
 
@@ -234,7 +244,7 @@ do
 done
 # Checking whether all parameters are set to build the application
 if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z $gittag ] || [ -z $version ] || [ -z $versioncode ]; then
-	help		
+	help
 	exit
 else
 	# All set Need to Transfer the Files from working directory
@@ -243,7 +253,11 @@ else
 	do
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
-        			[Yy]* ) # Codebase moved to a new location for safety
+        			[Yy]* ) # Creating a Base Directories
+					if [ ! -d $websitedirectory ]; then
+						mkdir -p $websitedirectory
+					fi
+					# Copying the codebase to a new Folder
 					newcodebase
 					# Gittagging done for the new codebase
 					if [ $gittag = 'true' ]; then
