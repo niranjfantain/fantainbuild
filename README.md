@@ -46,3 +46,5 @@ Prerequesties
 4.) In config.xml make sure that version=DEPLOYVERSION
 
 5.) In AndroidManifest.xml make sure that versioncode=DEPLOYVERSIONCODE
+
+6.) In Build.xml make sure that projectname=##DEPLOYPROJECTNAME##
