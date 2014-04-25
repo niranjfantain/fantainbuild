@@ -24,18 +24,19 @@ datetime=$(date +"%d-%m-%Y-%k%M%S")
 basedir="$(dirname $0)/buildapplication"
 websitedirectory="$basedir/website"
 mobiledirectory="$basedir/apk/$datetime"
+apkname=$(git rev-parse --abbrev-ref HEAD)
 # Environment 
 devapkfantain="com.fantain.fantain"
 prodapkfantain="com.fantain.comainapp"
 devapksrh="com.fantain.srhdev"
 prodapksrh="com.fantain.srh"
 # Search strings
-deployinstallation="$DEPLOYINSTALLATION$"
-deployinstance="$DEPLOYINSTANCE$"
-deployid="$DEPLOYID$"
-deployversion="$DEPLOYVERSION$"
-deployversioncode="$DEPLOYVERSIONCODE$"
-
+deployinstallation="##DEPLOYINSTALLATION##"
+deployinstance="##DEPLOYINSTANCE##"
+deployid="##DEPLOYID##"
+deployversion="##DEPLOYVERSION##"
+deployversioncode="##DEPLOYVERSIONCODE##"
+deployprojectname="##DEPLOYPROJECTNAME##"
 
 # Functions
 # Help 
@@ -78,6 +79,7 @@ function newcodebase {
 	configxml=$websitedirectory/config.xml
 	fantainEnvjs=$websitedirectory/www/js/f/fantainEnv.js
 	AndroidManifestxml=$websitedirectory/platforms/android/AndroidManifest.xml
+	Buildxml=$websitedirectory/platforms/android/build.xml
 }
 # Check for important files in the new codebase
 function checkfile() {
@@ -126,6 +128,7 @@ function buildwebsite {
 function buildapk {
 	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
 	searchandreplace $configxml $deployversion $version
+	searchandreplace $Buildxml $deployprojectname $apkname
 	searchandreplace $AndroidManifestxml $deployversioncode $versioncode
 	if [ $instance = 'dev' ]; then
 		if [ $installation = 'fantain' ]; then
@@ -153,7 +156,7 @@ function buildapk {
 	cd $websitedirectory
 	echo "${newline}APK Build process started"
 	cordova build
-	sudo cp "$websitedirectory/platforms/android/ant-build/*.apk" "$mobiledirectory"
+	sudo cp "$websitedirectory/platforms/android/ant-build/$apkname-debug.apk" "$mobiledirectory"
 	echo "${newline}Get your new APK at $mobiledirectory"
 }
 
@@ -261,14 +264,18 @@ else
 					newcodebase
 					# Gittagging done for the new codebase
 					if [ $gittag = 'true' ]; then
-						cd $apkdir
+						cd $websitedirectory
 						sudo git tag -a $gittagname -m $gittagdesc
 					fi
 					# Check the important files which are need to build the application
 					checkfile $configxml $fantainEnvjs $AndroidManifestxml
-					if [ $platform = 'website' ]; then 
+					if [ $platform = 'website' ]; then
+						sudo cp ./www/js/f/fantainEnv.js $fantainEnvjs 
 						buildwebsite
 					else
+						sudo cp ./www/js/f/fantainEnv.js $fantainEnvjs
+						sudo cp ./config.xml $configxml
+						sudo cp ./platforms/android/AndroidManifest.xml $AndroidManifestxml
 						buildapk
 					fi  
 					break;;
