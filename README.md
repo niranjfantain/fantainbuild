@@ -11,13 +11,13 @@ Steps to use
 
 2.) Open your bashfile 
 
-3.) Add the below snippet to the end of your bash file,
+3.) Add the below snippet to the end of your bash / Profile file,
 
       export PATH=$PATH:{the-path-where-this-project-cloned}/bin
 
 4.) Refresh the bash file using the below command,
 
-      source {your-path-to-bash-file}
+      source {your-path-to-bash/Profile-file}
       
 5.) Go to your project root directory and build the application
 
