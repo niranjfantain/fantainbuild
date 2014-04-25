@@ -69,9 +69,9 @@ For Detailed description of the parameters, try man fantainbuild
 # Create a new build folder and copy the codebase to it
 function newcodebase {
   	if [ "$(ls -A $websitedirectory)" ]; then
-              	sudo rsync --update  . $websitedirectory
+              	sudo cp -v -a -u  .  $websitedirectory
         else
-		sudo rsync -v -a  . $websitedirectory
+		sudo cp -v -a  . $websitedirectory
 	fi
 	echo "${newline}Your new codebase is in this location ${newline} $websitedirectory"
 	# Files Required to build the application with the complete path
