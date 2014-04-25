@@ -23,7 +23,7 @@ newline='
 datetime=$(date +"%d-%m-%Y-%k%M%S")
 basedir="$(dirname $0)/buildapplication"
 websitedirectory="$basedir/website"
-mobiledirectory="$basedir/apk"
+mobiledirectory="$basedir/apk/$datetime"
 # Environment 
 devapkfantain="com.fantain.fantain"
 prodapkfantain="com.fantain.comainapp"
@@ -149,12 +149,11 @@ function buildapk {
                 fi
 	fi
 	echo "${newline}Enivronments are set as per your needs"
-	if [ ! -d $mobiledirectory ]; then
-                mkdir -p $mobiledirectory
-        fi
+	mkdir -p $mobiledirectory
 	cd $websitedirectory
 	echo "${newline}APK Build process started"
 	cordova build
+	sudo cp "$websitedirectory/platforms/android/ant-build/*.apk" "$mobiledirectory"
 	echo "${newline}Get your new APK at $mobiledirectory"
 }
 
