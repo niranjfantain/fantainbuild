@@ -152,7 +152,7 @@ function buildapk {
 	if [ ! -d $mobiledirectory ]; then
                 mkdir -p $mobiledirectory
         fi
-	cd $mobiledirectory
+	cd $websitedirectory
 	echo "${newline}APK Build process started"
 	cordova build
 	echo "${newline}Get your new APK at $mobiledirectory"
@@ -169,71 +169,72 @@ fi
 # Gettting the parameters from the command 
 while getopts t:i:s:u:n:d:g:v:c: option
 do
+	input=`echo ${OPTARG} | tr '[:upper:]' '[:lower:]'`
         case "${option}"
         in
-                t) if [ ${OPTARG,,} = 'android' ] || [ ${OPTARG,,} = 'website' ]; then
-			platform=${OPTARG,,}
+                t) if [ $input = 'android' ] || [ $input = 'website' ]; then
+			platform=$input
 		   else
 			help 
 			exit
 	    	   fi;;
-                i) if [ ${OPTARG,,} = 'fantain' ] || [ ${OPTARG,,} = 'srh' ]; then
-                        installation=${OPTARG,,}
+                i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
+                        installation=$input
                    else 
 			help 
 			exit
                    fi;;
-                s) if [ ${OPTARG,,} = 'dev' ] || [ ${OPTARG,,} = 'test' ] || [ ${OPTARG,,} = 'prod' ]; then
-                        instance=${OPTARG,,}
+                s) if [ $input = 'dev' ] || [ $input = 'test' ] || [ $input = 'prod' ]; then
+                        instance=$input
                    else
 			help 
 			exit
                    fi;;
-                u) if [ ${OPTARG,,} = 'true' ] || [ ${OPTARG,,} = 'false' ]; then
-                        uglify=${OPTARG,,}
+                u) if [ $input = 'true' ] || [ $input = 'false' ]; then
+                        uglify=$input
                    else 
 			help 
 			exit
                    fi;;
-		n) if [ ${OPTARG} ]; then
-                        gittagname=${OPTARG,,}
+		n) if [ $input ]; then
+                        gittagname=$input
                    else
                         help
                         exit
                    fi;;
-		d) if [ ${OPTARG} ]; then
-                        gittagdesc=${OPTARG,,}
+		d) if [ $input ]; then
+                        gittagdesc=$input
                    else
                         help
                         exit
                    fi;;		
-		g) if [ ${OPTARG,,} = 'true' ]; then
+		g) if [ $input = 'true' ]; then
                       if [ -z $gittagname ] || [ -z $gittagdesc ]; then
 			help
 			exit
 		      else
-			gittag=${OPTARG,,}
+			gittag=$input
 		      fi   
-	           elif [ ${OPTARG,,} = 'false' ]; then
+	           elif [ $input = 'false' ]; then
 		      if [ -z $gittagname ] && [ -z $gittagdesc ]; then
-			gittag=${OPTARG,,}
+			gittag=$input
 		      else
 			echo "${newline}WARNING: -g is set to false. -d -n  are ignored for smooth build." 
 			echo "${newline}Cleaning you command..." 
-			gittag=${OPTARG,,}
+			gittag=$input
 		   fi
                    else 
 			help 
 			exit
                    fi;;
-	     	v) if [ ${OPTARG} ]; then
-                        version=${OPTARG}
+	     	v) if [ $input ]; then
+                        version=$input
                    else 
 			help 
 			exit
                    fi;;
-	        c) if [ ${OPTARG} ]; then
-                        versioncode=${OPTARG}
+	        c) if [ $input ]; then
+                        versioncode=$input
                    else 
 			help 
 			exit
