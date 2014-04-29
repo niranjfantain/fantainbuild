@@ -25,6 +25,8 @@ Gitdescription , a small reference for the current snapshot of the codebase.
 Version of the codebase realease.
 .SH -c [MANDATORY]
 Version code number of the codebase.
+.SH -x [MANDATORY]
+Development release flag to set the apk name accordingly.
 
 .SH SEE ALSO
 

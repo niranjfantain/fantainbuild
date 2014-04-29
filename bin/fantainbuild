@@ -45,10 +45,11 @@ REFERENCE: These paramters are needed to build fantain application
 			-i {fantain | srh }
 			-s {dev | test | prod}	
 			-u {true | false}
-			-n { gittag name }
-			-d { gittag description }
+			-n {gittag name}
+			-d {gittag description}
 			-v {version number}
 			-c {version code number}
+			-x {production release}
 
 Example
 ------- 
@@ -91,7 +92,12 @@ function searchandreplace() {
 		echo "Please Refer README.md Prerequesites to make yourself comfortable to do the change"
 		exit
   	  else
-    		sed -i "s/$search/$replace/" $1
+		ostype=$(uname)
+		if [ $ostype = 'Darwin' ]; then
+    			sed -i '' "s/$search/$replace/" $1
+		else
+			sed -i "s/$search/$replace/" $1
+		fi
   	  fi
 }
 # Build Application for website
@@ -117,27 +123,31 @@ function buildapk {
 	searchandreplace $fantainEnvjs $deployinstallation $installation 
 	searchandreplace $fantainEnvjs $deployinstance $instance
 	searchandreplace $configxml $deployversion $version
-	searchandreplace $Buildxml $deployprojectname "$gittagname"
+	if [ $production = "false" ]; then 
+		searchandreplace $Buildxml $deployprojectname "$installation-$gittagname"
+	else
+		searchandreplace $Buildxml $deployprojectname "$installation"
+	fi
 	searchandreplace $AndroidManifestxml $deployversioncode $versioncode
 	if [ $instance = 'dev' ]; then
 		if [ $installation = 'fantain' ]; then
-			searchandreplace $configxml $deployid $devapkfantain
+			searchandreplace $configxml $deployid "$devapkfantain-$gittagname"
 		else
-			searchandreplace $configxml $deployid $devapksrh
+			searchandreplace $configxml $deployid "$devapksrh-$gittagname"
 
 		fi
 	elif [ $instance = 'prod' ]; then
                 if [ $installation = 'fantain' ]; then
-                        searchandreplace $configxml $deployid $prodapkfantain
+                        searchandreplace $configxml $deployid "$prodapkfantain"
                 else
-                        searchandreplace $configxml $deployid $prodapksrh
+                        searchandreplace $configxml $deployid "$prodapksrh"
                 fi
 	else
 		if [ $installation = 'fantain' ]; then
-                        echo "${newline}This installation under contruction.Try again to get your APK"
+                        echo "${newline}This installation under construction.Try again to get your APK"
 			exit 
                 else
-                        echo "${newline}This installation under contruction.Try again to get your APK" 
+                        echo "${newline}This installation under construction.Try again to get your APK" 
 			exit
                 fi
 	fi
@@ -149,7 +159,11 @@ function buildapk {
 	node r.js -o fantain-build.js
 	echo "${newline}APK Build process started"
 	cd $basedir
-	cordova build
+	if [ $instance = "dev" ]; then
+		cordova build
+	else
+		cordova build --release
+	fi
 	cp "$basedir/platforms/android/ant-build/$gittagname-debug.apk" "$basedir/apk"
 	echo "${newline}Get your new APK at $basedir/apk"
 }
@@ -161,21 +175,21 @@ function initiatebuild {
         fi
         # Copying the codebase to a new Folder
         newcodebase
-        # Gittagging done for the new codebase
+        # Gittagging for new codebase
         cd $basedir
         git tag -a "$gittagname" -m "$gittagdesc"
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
-               if [ $platform = 'website' ]; then
-                      cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
-                     buildwebsite
-               else
-                      cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
-                      cp $FANTAIN_HOME/config.xml $basedir/$configxml
-                      cp $FANTAIN_HOME/platforms/android/AndroidManifest.xml $basedir/$AndroidManifestxml
-		      cp $FANTAIN_HOME/platforms/android/build.xml $basedir/$Buildxml
-                     buildapk
-               fi
+        if [ $platform = 'website' ]; then
+              cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
+              buildwebsite
+        else
+              cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
+              cp $FANTAIN_HOME/config.xml $basedir/$configxml
+              cp $FANTAIN_HOME/platforms/android/AndroidManifest.xml $basedir/$AndroidManifestxml
+	      cp $FANTAIN_HOME/platforms/android/build.xml $basedir/$Buildxml
+              buildapk
+        fi
 }
 
 # Trigerring Help Function when there is no paramter
@@ -196,7 +210,7 @@ function errorhandling() {
 
 # The build kicksoff from here
 # Gettting the parameters from the command 
-while getopts t:i:s:u:n:d:v:c: option
+while getopts t:i:s:u:n:d:v:c:x: option
 do
 	input=`echo ${OPTARG} | tr '[:upper:]' '[:lower:]'`
         case "${option}"
@@ -225,8 +239,18 @@ do
                         errorhandling "Uglify" $uglify
                         exit
                    fi;;
-		n) if [ -n "$input" ]; then 
-		    	gittagname="$input"
+		n) if [ -n "$input" ]; then
+				case "$input" in  
+     					*\ * )
+           					help
+                                		echo "${newline}SPECIFIC ERROR:Git does not allow -n to have spaces"
+						exit;;
+       					*\.* )
+						help
+                                		echo "${newline}SPECIFIC ERROR:Fantainbuild does not allow -n to have .(Dot)"
+						exit;;
+					* ) gittagname=$input
+				esac
 		   else
 			errorhandling "Gittag Name" $gittagname
                         exit
@@ -247,6 +271,18 @@ do
 			versioncode="$input"
 		   else
                         errorhandling "Version Code" $versioncode
+                        exit
+                   fi;;
+		x) if [ $input = 'true' ] || [ $input = 'false' ]; then
+			if [ $instance = "prod" ] && [ $input = 'true' ]; then
+                        	production="$input"
+			else
+				help
+				echo "${newline}SPECIFIC ERROR: You can switch -x true / false only if -s is set to prod / dev respectively"
+				exit
+			fi
+                   else
+                        errorhandling "Production Release" $production
                         exit
                    fi;;
 		*) help
