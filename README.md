@@ -49,8 +49,6 @@ Prerequesties
 
 6.) In Build.xml make sure that projectname=##DEPLOYGITNAME##
 
-7.) Add Environment variable in your bashfile / profile as,
+7.) Add Environment variable in your bashfile / profile in the following format and update your bashfile / profile
 
 	FANTAIN_HOME={root-path-to-your-project}
-
-    and update your bashfile / profile
