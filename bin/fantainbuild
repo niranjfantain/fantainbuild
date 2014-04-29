@@ -38,7 +38,7 @@ deployprojectname="##DEPLOYGITNAME##"
 # Help 
 function help {
 	echo '
-ERROR: These paramters are needed to build fantain application
+REFERENCE: These paramters are needed to build fantain application
 
 	      	Try fantainbuild 
 			-t {android | website} 
@@ -87,13 +87,15 @@ function searchandreplace() {
 	replace1=$5
   	  grep "$search" $1 &> /dev/null
   	  if [ $? -ne 0 ]; then
-    		echo "Search string not found in $1!"
+    		echo "Please set your default value(s) in $1!. This is mandatory to be done in your codebase. Please Refer README.md Prerequesties"
+		exit
   	  else
     		sed -i "s/$search/$replace/" $1
   	  fi
 	  grep "$search1" $1 &> /dev/null
           if [ $? -ne 0 ]; then
-                echo "Search string not found in $1!"
+                echo "Please set your default value(s) in $1!. This is mandatory to be done in your codebase. Please Refer README.md Prerequesties"
+		exit
           else
                 sed -i "s/$search1/$replace1/" $1
           fi
@@ -189,6 +191,15 @@ if test $# -eq 0; then
 	help
 	exit 0
 fi
+# InSpecific Errors Messages
+function errorhandling() {
+	help
+	if [ -z $2 ]; then 
+		echo "${newline}SPECIFIC ERROR:$1 Not Set with correct value. Please Try again"
+	else
+		echo "${newline}SPECIFIC ERROR: Unknown bug while setting $1. Please Try again"
+	fi
+}
 
 # The build kicksoff from here
 # Gettting the parameters from the command 
@@ -199,40 +210,74 @@ do
         in
                 t) if [ $input = 'android' ] || [ $input = 'website' ]; then
 			platform=$input
+		   else
+			errorhandling "Platform" $platform 
+			exit
 	    	   fi;;
                 i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
                         installation=$input
+		   else
+		  	errorhandling "Installation" $installation      
+                        exit
                    fi;;
                 s) if [ $input = 'dev' ] || [ $input = 'test' ] || [ $input = 'prod' ]; then
                         instance=$input
+		   else
+                        errorhandling "Instance" $instance
+                        exit
                    fi;;
                 u) if [ $input = 'true' ] || [ $input = 'false' ]; then
                         uglify=$input
+		   else
+                        errorhandling "Uglify" $uglify
+                        exit
                    fi;;
-		n) gittagname=$input;;
-                d) gittagdesc=$input;;
-	     	v) version=$input;;
-	        c) versioncode=$input;;
+		n) if [ -n "$input" ]; then 
+		    	gittagname=$input
+		   else
+			errorhandling "Gittag Name" $gittagname
+                        exit
+		   fi;;
+                d) if [ -n "$input" ]; then
+			gittagdesc=$input
+		   else
+                        errorhandling "Gittag Description" $gittagdesc
+                        exit
+                   fi;;
+	     	v) if [ -n "$input" ]; then
+			version=$input
+		   else
+			errorhandling "Version" $version
+                        exit
+                   fi;;
+	        c) if [ -n "$input" ]; then
+			versioncode=$input
+		   else
+                        errorhandling "Version Code" $versioncode
+                        exit
+                   fi;;
 		*) help
 		   exit
         esac
 done
+
 # Checking whether all parameters are set to build the application
-if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z $gittagname ] || [ -z $gittagdesc ] || [ -z $version ] || [ -z $versioncode ]; then
+if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z "$gittagname" ] || [ -z "$gittagdesc" ] || [ -z "$version" ] || [ -z "$versioncode" ]; then
 	help
+	echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 	exit
 else
 	# All set Need to Transfer the Files from working directory
 	echo "${newline}Hurray!! All Parameters are Good"
-       	 # All set. Build Process will be initiated
-		if [ ! -z $FANTAIN_HOME ]; then
-        		if [ -d $FANTAIN_HOME/www ]; then
-				cd $FANTAIN_HOME
-       				initiatebuild
-			else
-				echo "${newline}Your Environment variable is wrong,kindly change the environment variable and try again" 
-			fi
-		else
-			echo "${newline}Your Environment variable is not set,kindly set the environment variable and try again"
-		fi	
-fi
+	# All set. Build Process will be initiated
+	if [ ! -z $FANTAIN_HOME ]; then
+      		if [ -d $FANTAIN_HOME/www ]; then
+			cd $FANTAIN_HOME
+       			initiatebuild
+      		else
+			echo "${newline}Your Environment variable is wrong,kindly change the environment variable and try again" 
+      		fi
+	else
+      		echo "${newline}Your Environment variable is not set,kindly set the environment variable and try again"
+	fi
+fi	
