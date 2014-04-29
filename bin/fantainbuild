@@ -84,8 +84,6 @@ function checkfile() {
 function searchandreplace() {
 	search=$2
 	replace=$3
-	search1=$4
-	replace1=$5
   	  grep "$search" $1 &> /dev/null
   	  if [ $? -ne 0 ]; then
     		echo "${newline}Unable to set your environment value(s) in $1!" 
@@ -95,19 +93,11 @@ function searchandreplace() {
   	  else
     		sed -i "s/$search/$replace/" $1
   	  fi
-	  grep "$search1" $1 &> /dev/null
-          if [ $? -ne 0 ]; then
-                echo "${newline}Unable to set your environment value(s) in $1!"
-                echo "The same file in your code base is to be changed with default value(s).This is mandatory to do the build."
-                echo "Please Refer README.md Prerequesites to make yourself comfortable to do the change"
-		exit
-          else
-                sed -i "s/$search1/$replace1/" $1
-          fi
 }
 # Build Application for website
 function buildwebsite {
-	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
+	searchandreplace $fantainEnvjs $deployinstallation $installation
+	searchandreplace $fantainEnvjs $deployinstance $instance
 	echo "${newline}Enivronments are set as per your needs"	  
 	cd $basedir
         echo "${newline}Fantain Build is Started"
@@ -124,7 +114,8 @@ function buildwebsite {
 }
 # Build APK for mobiles
 function buildapk {
-	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
+	searchandreplace $fantainEnvjs $deployinstallation $installation 
+	searchandreplace $fantainEnvjs $deployinstance $instance
 	searchandreplace $configxml $deployversion $version
 	searchandreplace $Buildxml $deployprojectname "$gittagname"
 	searchandreplace $AndroidManifestxml $deployversioncode $versioncode
