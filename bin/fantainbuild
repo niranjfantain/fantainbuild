@@ -294,7 +294,7 @@ do
 done
 
 # Checking whether all parameters are set to build the application
-if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z "$gittagname" ] || [ -z "$gittagdesc" ] || [ -z "$version" ] || [ -z "$versioncode" ]; then
+if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z "$gittagname" ] || [ -z "$gittagdesc" ] || [ -z "$version" ] || [ -z "$versioncode" ] || [ -z $production ]; then
 	help
 	echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 	exit
