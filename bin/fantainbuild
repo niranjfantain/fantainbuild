@@ -60,9 +60,9 @@ For Detailed description of the parameters, try man fantainbuild
 # Create a new build folder and copy the codebase to it
 function newcodebase {
   	if [ "$(ls -A $basedir)" ]; then
-              	sudo cp -v -a -u  .  $basedir
+              	 cp -v -a -u  .  $basedir
         else
-		sudo cp -v -a  . $basedir
+		 cp -v -a  . $basedir
 	fi
 	echo "${newline}Your new codebase is in this location ${newline} $basedir"
 	# Files Required to build the application with the complete path
@@ -173,13 +173,13 @@ function initiatebuild {
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
                if [ $platform = 'website' ]; then
-                     sudo cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
+                      cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
                      buildwebsite
                else
-                     sudo cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
-                     sudo cp $FANTAIN_HOME/config.xml $basedir/$configxml
-                     sudo cp $FANTAIN_HOME/platforms/android/AndroidManifest.xml $basedir/$AndroidManifestxml
-		     sudo cp $FANTAIN_HOME/platforms/android/build.xml $basedir/$Buildxml
+                      cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
+                      cp $FANTAIN_HOME/config.xml $basedir/$configxml
+                      cp $FANTAIN_HOME/platforms/android/AndroidManifest.xml $basedir/$AndroidManifestxml
+		      cp $FANTAIN_HOME/platforms/android/build.xml $basedir/$Buildxml
                      buildapk
                fi
 }
@@ -224,29 +224,15 @@ if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify 
 else
 	# All set Need to Transfer the Files from working directory
 	echo "${newline}Hurray!! All Parameters are Good"
-	while true; 
-	do
-    		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
-    			case $yn in
-        			[Yy]* ) # All set. Build Process will be initiated
-					if [ $(pwd) = $FANTAIN_HOME ]; then
-        					initiatebuild 
-					else
-						echo "${newline}Are you kidding??? You are Not in your root directory" 
-						echo "${newline}Okay Let it be I Forgive you and will take you to your root directory within 10 Seconds"
-						sleep 10
-						cd $FANTAIN_HOME
-						initiatebuild
-					fi
-					break;;
-        			[Nn]* ) # To make the user run the fantainbuild from the root directory
-					echo "${newline}Moving To your Root Directory, which you have set at your Profile / Bash File"
-					cd $FANTAIN_HOME
-					echo "${newline}Moved to your Root Directory. Bulid Process Started...."
-					initiatebuild
-					exit;;
-        	    		    * ) # To handle the wrong input given by the user
-					echo "${newline}Please enter y or n";;
-   		 esac
-	done
+       	 # All set. Build Process will be initiated
+		if [ ! -z $FANTAIN_HOME ]; then
+        		if [ -d $FANTAIN_HOME/www ]; then
+				cd $FANTAIN_HOME
+       				initiatebuild
+			else
+				echo "${newline}Your Environment variable is wrong,kindly change the environment variable and try again" 
+			fi
+		else
+			echo "${newline}Your Environment variable is not set,kindly set the environment variable and try again"
+		fi	
 fi
