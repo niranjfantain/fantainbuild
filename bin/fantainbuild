@@ -87,14 +87,18 @@ function searchandreplace() {
 	replace1=$5
   	  grep "$search" $1 &> /dev/null
   	  if [ $? -ne 0 ]; then
-    		echo "Please set your default value(s) in $1!. This is mandatory to be done in your codebase. Please Refer README.md Prerequesties"
+    		echo "${newline}Unable to set your environment value(s) in $1!" 
+		echo "The same file in your code base is to be changed with default value(s).This is mandatory to do the build."
+		echo "Please Refer README.md Prerequesites to make yourself comfortable to do the change"
 		exit
   	  else
     		sed -i "s/$search/$replace/" $1
   	  fi
 	  grep "$search1" $1 &> /dev/null
           if [ $? -ne 0 ]; then
-                echo "Please set your default value(s) in $1!. This is mandatory to be done in your codebase. Please Refer README.md Prerequesties"
+                echo "${newline}Unable to set your environment value(s) in $1!"
+                echo "The same file in your code base is to be changed with default value(s).This is mandatory to do the build."
+                echo "Please Refer README.md Prerequesites to make yourself comfortable to do the change"
 		exit
           else
                 sed -i "s/$search1/$replace1/" $1
