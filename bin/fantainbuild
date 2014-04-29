@@ -199,27 +199,15 @@ do
         in
                 t) if [ $input = 'android' ] || [ $input = 'website' ]; then
 			platform=$input
-		   else
-			help 
-			exit
 	    	   fi;;
                 i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
                         installation=$input
-                   else 
-			help 
-			exit
                    fi;;
                 s) if [ $input = 'dev' ] || [ $input = 'test' ] || [ $input = 'prod' ]; then
                         instance=$input
-                   else
-			help 
-			exit
                    fi;;
                 u) if [ $input = 'true' ] || [ $input = 'false' ]; then
                         uglify=$input
-                   else 
-			help 
-			exit
                    fi;;
 		n) gittagname=$input;;
                 d) gittagdesc=$input;;
@@ -240,7 +228,8 @@ else
 	do
     		read -p "${newline}Are you in Root Directory of your project?(y or n)" yn
     			case $yn in
-        			[Yy]* ) initiatebuild  
+        			[Yy]* ) # All set. Build Process is initiated
+        				initiatebuild  
 					break;;
         			[Nn]* ) # To make the user run the fantainbuild from the root directory
 					echo "${newline}Moving To your Root Directory, which you have set at your Profile / Bash File"
