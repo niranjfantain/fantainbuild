@@ -34,7 +34,7 @@ Installing the man file
 
       man fantainbuild
 
-Prerequesties
+Prerequesites
 =============
 
 1.) In fantainEnv.js make sure that installation=##DEPLOYINSTALLATION##
