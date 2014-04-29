@@ -257,6 +257,7 @@ do
                         exit
                    fi;;
 		*) help
+		   echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 		   exit
         esac
 done
