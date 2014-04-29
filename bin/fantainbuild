@@ -189,6 +189,7 @@ function initiatebuild {
 # Trigerring Help Function when there is no paramter
 if test $# -eq 0; then
 	help
+	echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 	exit 0
 fi
 # InSpecific Errors Messages
@@ -257,7 +258,7 @@ do
                         exit
                    fi;;
 		*) help
-		   echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
+		   echo "${newline}SPECIFIC ERROR: Build accpets only above parameters"
 		   exit
         esac
 done
