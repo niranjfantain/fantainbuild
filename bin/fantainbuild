@@ -92,6 +92,7 @@ function searchandreplace() {
 		echo "Please Refer README.md Prerequesites to make yourself comfortable to do the change"
 		exit
   	  else
+		# Replace the search string with replace string based on the OS
 		ostype=$(uname)
 		if [ $ostype = 'Darwin' ]; then
     			sed -i '' "s/$search/$replace/" $1
@@ -180,6 +181,7 @@ function initiatebuild {
         git tag -a "$gittagname" -m "$gittagdesc"
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
+	# To Build the application based on the platform
         if [ $platform = 'website' ]; then
               cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
               buildwebsite
