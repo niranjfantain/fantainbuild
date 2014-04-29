@@ -6,7 +6,7 @@
 fantainbuild  \- build source code as platform specific application.
 
 .SH SYNOPSIS
-fantainbuild -t {android | website} -i {fantain | srh} -s {dev | test | prod} -u {true | false} -g {true | false} -n {gittag name} -d {gittag description} -v {version number} -c {version code number} 
+fantainbuild -t {android | website} -i {fantain | srh} -s {dev | test | prod} -u {true | false} -n {gittag name} -d {gittag description} -v {version number} -c {version code number} 
  
 .SH PARAMETERS AND ITS DESCRIPTIONS
 .SH -t [MANDATORY]
@@ -17,12 +17,10 @@ Installation to which client the code is about to get deployed.
 Intance to mention the code is in dev / test / prod stage.
 .SH -u [MANDATORY]
 Uglify the code, a javascript to make the code more crisp.
-.SH -g [MANDATORY]
-Gittag to add a small note to Git for reference purpose.
-.SH -n [DEPENDANT MANDATORY]
-If Gittag is set to true, then the gitname must be given.
-.SH -d [DEPENDANT MANDATORY]
-If Gittag is set to true, then the gitdescription must be given.
+.SH -n [MANDATORY]
+Gitname , the name given for the current snapshot of the codebase.
+.SH -d [MANDATORY]
+Gitdescription , a small reference for the current snapshot of the codebase.
 .SH -v [MANDATORY]
 Version of the codebase realease.
 .SH -c [MANDATORY]
