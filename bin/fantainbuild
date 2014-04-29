@@ -59,10 +59,11 @@ For Detailed description of the parameters, try man fantainbuild
 }
 # Create a new build folder and copy the codebase to it
 function newcodebase {
+	echo "${newline}Copying Files....."
   	if [ "$(ls -A $basedir)" ]; then
-              	 cp -v -a -u  .  $basedir
+              	 cp -a -u  .  $basedir
         else
-		 cp -v -a  . $basedir
+		 cp -a  . $basedir
 	fi
 	echo "${newline}Your new codebase is in this location ${newline} $basedir"
 	# Files Required to build the application with the complete path
@@ -125,24 +126,20 @@ function buildwebsite {
 function buildapk {
 	searchandreplace $fantainEnvjs $deployinstallation $installation $deployinstance $instance
 	searchandreplace $configxml $deployversion $version
-	searchandreplace $Buildxml $deployprojectname $gittagname
+	searchandreplace $Buildxml $deployprojectname "$gittagname"
 	searchandreplace $AndroidManifestxml $deployversioncode $versioncode
 	if [ $instance = 'dev' ]; then
 		if [ $installation = 'fantain' ]; then
 			searchandreplace $configxml $deployid $devapkfantain
-			searchandreplace $AndroidManifestxml $deployid $devapkfantain 
 		else
 			searchandreplace $configxml $deployid $devapksrh
-			searchandreplace $AndroidManifestxml $deployid $devapksrh
 
 		fi
 	elif [ $instance = 'prod' ]; then
                 if [ $installation = 'fantain' ]; then
                         searchandreplace $configxml $deployid $prodapkfantain
-			searchandreplace $AndroidManifestxml $deployid $prodapkfantain
                 else
                         searchandreplace $configxml $deployid $prodapksrh
-			searchandreplace $AndroidManifestxml $deployid $prodapksrh
                 fi
 	else
 		if [ $installation = 'fantain' ]; then
@@ -175,7 +172,7 @@ function initiatebuild {
         newcodebase
         # Gittagging done for the new codebase
         cd $basedir
-        git tag -a $gittagname -m $gittagdesc
+        git tag -a "$gittagname" -m "$gittagdesc"
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
                if [ $platform = 'website' ]; then
@@ -238,25 +235,25 @@ do
                         exit
                    fi;;
 		n) if [ -n "$input" ]; then 
-		    	gittagname=$input
+		    	gittagname="$input"
 		   else
 			errorhandling "Gittag Name" $gittagname
                         exit
 		   fi;;
                 d) if [ -n "$input" ]; then
-			gittagdesc=$input
+			gittagdesc="$input"
 		   else
                         errorhandling "Gittag Description" $gittagdesc
                         exit
                    fi;;
 	     	v) if [ -n "$input" ]; then
-			version=$input
+			version="$input"
 		   else
 			errorhandling "Version" $version
                         exit
                    fi;;
 	        c) if [ -n "$input" ]; then
-			versioncode=$input
+			versioncode="$input"
 		   else
                         errorhandling "Version Code" $versioncode
                         exit
