@@ -33,15 +33,9 @@ deployid="##DEPLOYID##"
 deployversion="##DEPLOYVERSION##"
 deployversioncode="##DEPLOYVERSIONCODE##"
 deployprojectname="##DEPLOYGITNAME##"
-# Colors
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-endcolor=$(tput sgr 0)
-# Font Size
-bold=$(tput bold)
-# Display Handlers
-success="${green}${bold}"
-failure="${red}${bold}"
+# Assets Folder
+srhassets="srh-assets/"
+fantainassets="fantain-assets/"
 
 # Functions
 # Help 
@@ -60,20 +54,20 @@ ${bold}REFERENCE:${endcolor} These paramters are needed to build fantain applica
 			-c {version code number}
 			-x {true | false}
 
-${bold}EXAMPLE${endcolor}
+EXAMPLE
 ------- 
-${success}fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d my-git-desc -v 3.0 -c 1 -x false${endcolor}
+fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d my-git-desc -v 3.0 -c 1 -x false
 
-For Detailed description of the parameters, try ${bold}man fantainbuild${endcolor}
+For Detailed description of the parameters, try man fantainbuild
 "
 }
 # Create a new build folder and copy the codebase to it
 function newcodebase {
 	echo "${newline}Copying Files....."
   	if [ "$(ls -A $basedir)" ]; then
-              	 rsync -a -u $FANTAIN_HOME $basedir
+              	 rsync -au --progress --exclude '$srhassets' --exclude '$fantainassets' $FANTAIN_HOME $basedir
         else
-		 cp -a  . $basedir
+		 rsync -a  --exclude '$srhassets' --exclude '$fantainassets' $FANTAIN_HOME $basedir
 	fi
 	echo "${newline}Your new codebase is in this location ${newline} $basedir"
 	# Files Required to build the application with the complete path
@@ -224,9 +218,9 @@ fi
 function errorhandling() {
 	help
 	if [ -z $2 ]; then 
-		echo "${red}${bold}SPECIFIC ERROR:$1 Not Set with correct value. Please Try again${endcolor}"
+		echo "SPECIFIC ERROR:$1 Not Set with correct value. Please Try again${endcolor}"
 	else
-		echo "${red}${bold}SPECIFIC ERROR: Unknown bug while setting $1. Please Try again{$endcolor}"
+		echo "SPECIFIC ERROR: Unknown bug while setting $1. Please Try again{$endcolor}"
 	fi
 }
 
