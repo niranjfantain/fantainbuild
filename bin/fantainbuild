@@ -129,6 +129,7 @@ function buildapk {
 	searchandreplace $fantainEnvjs $deployinstallation $installation 
 	searchandreplace $fantainEnvjs $deployinstance $instance
 	searchandreplace $configxml $deployversion $version
+	searchandreplace $configxml $deployapkname "$installation-$gittagname"
 	if [ $production = "false" ]; then 
 		searchandreplace $Buildxml $deployprojectname "$installation-$gittagname"
 	else
