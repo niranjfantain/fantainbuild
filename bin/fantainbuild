@@ -276,7 +276,7 @@ do
                         exit
                    fi;;
 		x) if [ $input = 'true' ] || [ $input = 'false' ]; then
-			if [ $instance = "prod" ] && [ $input = 'true' ]; then
+			if ([ $instance = "prod" ] && [ $input = 'true' ] ) || ([ $instance = "dev" ] && [ $input = 'false' ]); then
                         	production="$input"
 			else
 				help
