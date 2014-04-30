@@ -183,8 +183,12 @@ function initiatebuild {
         newcodebase
         # Gittagging for new codebase
         cd $basedir
-        test=$(git tag -a "$gittagname" -m "$gittagdesc")
-	echo $test
+	test=`git tag | egrep -o "$gittagname$"`
+	if  [ ! -z $test ];then
+		echo "Git tag name already exists,Kindly change the git tag name"
+		exit
+	fi
+        git tag -a "$gittagname" -m "$gittagdesc"
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
 	# To Build the application based on the platform
