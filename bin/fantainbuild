@@ -176,10 +176,11 @@ function buildapk {
 	# To make the cordova build according to the instance
 	if [ $instance = "dev" ]; then
 		cordova build
+		cp "$basedir/platforms/android/ant-build/$installation-$gittagname-debug.apk" "$basedir/apk"
 	else
 		cordova build --release
+		cp "$basedir/platforms/android/ant-build/$installation-release.apk" "$basedir/apk"
 	fi
-	cp "$basedir/platforms/android/ant-build/$gittagname-debug.apk" "$basedir/apk"
 	echo "${newline}Get your new APK at $basedir/apk"
 }
 # Intiates the Build Process
