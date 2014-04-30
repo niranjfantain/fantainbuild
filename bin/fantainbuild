@@ -160,9 +160,11 @@ function buildapk {
 	node r.js -o fantain-build.js
 	echo "${newline}APK Build process started"
 	cd $basedir
+	# For Removing the Crunch directory
 	if [ -d ../facebook-android-sdk-3.7/facebook/bin/res/crunch ]; then
 		rm -r ../facebook-android-sdk-3.7/facebook/bin/res/crunch
 	fi
+	# To make the cordova build according to the instance
 	if [ $instance = "dev" ]; then
 		cordova build
 	else
