@@ -49,11 +49,11 @@ REFERENCE: These paramters are needed to build fantain application
 			-d {gittag description}
 			-v {version number}
 			-c {version code number}
-			-x {production release}
+			-x {true | false}
 
 Example
 ------- 
-fantainbuild -t android -i fantain -s dev -u true -n v1.0 -d "my-git-desc" -v 3.0 -c 1
+fantainbuild -t android -i fantain -s dev -u true -n v1.0 -d "my-git-desc" -v 3.0 -c 1 -x false
 
 For Detailed description of the parameters, try man fantainbuild
 '
