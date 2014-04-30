@@ -37,18 +37,20 @@ Installing the man file
 Prerequesites
 =============
 
-1.) In fantainEnv.js make sure that installation=##DEPLOYINSTALLATION##
+1.) In fantainEnv.js make sure that installation=_DEPLOY_INSTALLATION_
 
-2.) In fantainEnv.js make sure that env=##DEPLOYINSTANCE##
+2.) In fantainEnv.js make sure that env=_DEPLOY_INSTANCE_
 
-3.) In config.xml make sure that id=##DEPLOYID##
+3.) In config.xml make sure that id=_DEPLOY_ID_
 
-4.) In config.xml make sure that version=##DEPLOYVERSION##
+4.) In config.xml make sure that version=_DEPLOY_VERSION_
 
-5.) In AndroidManifest.xml make sure that versioncode=##DEPLOYVERSIONCODE##
+5.) In config.xml make sure that name=_DEPLOY_APK_NAME_
 
-6.) In Build.xml make sure that projectname=##DEPLOYGITNAME##
+6.) In AndroidManifest.xml make sure that versioncode=_DEPLOY_VERSION_CODE_
 
-7.) Add Environment variable in your bashfile / profile in the following format and update your bashfile / profile
+7.) In Build.xml make sure that projectname=_DEPLOY_GIT_NAME_
+
+8.) Add Environment variable in your bashfile / profile in the following format and update your bashfile / profile
 
 	FANTAIN_HOME={root-path-to-your-project}
