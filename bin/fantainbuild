@@ -53,7 +53,7 @@ REFERENCE: These paramters are needed to build fantain application
 
 Example
 ------- 
-fantainbuild -t android -i fantain -s dev -u true -n v1.0 -d "my-git-desc" -v 3.0 -c 1 -x false
+fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d "my-git-desc" -v 3.0 -c 1 -x false
 
 For Detailed description of the parameters, try man fantainbuild
 '
@@ -62,7 +62,7 @@ For Detailed description of the parameters, try man fantainbuild
 function newcodebase {
 	echo "${newline}Copying Files....."
   	if [ "$(ls -A $basedir)" ]; then
-              	 cp -a -u  .  $basedir
+              	 rsync -a -u $FANTAIN_HOME $basedir
         else
 		 cp -a  . $basedir
 	fi
@@ -183,7 +183,8 @@ function initiatebuild {
         newcodebase
         # Gittagging for new codebase
         cd $basedir
-        git tag -a "$gittagname" -m "$gittagdesc"
+        test=$(git tag -a "$gittagname" -m "$gittagdesc")
+	echo $test
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
 	# To Build the application based on the platform
