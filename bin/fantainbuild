@@ -27,8 +27,8 @@ prodapkfantain="com.fantain.comainapp"
 devapksrh="com.fantain.srhdev"
 prodapksrh="com.fantain.srh"
 # Assets Folder
-srhassets="srh-assets/"
-fantainassets="fantain-assets/"
+srhassets="$basedir/srh-assets"
+fantainassets="$basedir/fantain-assets"
 # Search strings
 deployinstallation="_DEPLOY_INSTALLATION_"
 deployinstance="_DEPLOY_INSTANCE_"
@@ -66,10 +66,11 @@ For Detailed description of the parameters, try man fantainbuild
 function newcodebase {
 	echo "${newline}Copying Files....."
   	if [ "$(ls -A $basedir)" ]; then
-              	 rsync -au --progress --exclude '$srhassets' --exclude '$fantainassets' $FANTAIN_HOME $basedir
+              	 rsync -au  $FANTAIN_HOME $basedir
         else
-		 rsync -a  --exclude '$srhassets' --exclude '$fantainassets' $FANTAIN_HOME $basedir
+		 rsync -a  $FANTAIN_HOME $basedir
 	fi
+	rm -r $srhassets $fantainassets
 	echo "${newline}Your new codebase is in this location ${newline} $basedir"
 	# Files Required to build the application with the complete path
         configxml=$basedir/config.xml
@@ -196,6 +197,11 @@ function initiatebuild {
         git tag -a "$gittagname" -m "$gittagdesc"
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
+	if [ $installation = 'fantain' ]; then
+             cp -ar $FANTAIN_HOME/fantain-assets/ $basedir
+        else
+             cp -ar $FANTAIN_HOME/srh-assets/ $basedir
+        fi
 	# To Build the application based on the platform
         if [ $platform = 'website' ]; then
               cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
