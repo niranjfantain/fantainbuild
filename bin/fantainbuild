@@ -160,6 +160,9 @@ function buildapk {
 	node r.js -o fantain-build.js
 	echo "${newline}APK Build process started"
 	cd $basedir
+	if [ -d ../facebook-android-sdk-3.7/facebook/bin/res/crunch ]; then
+		rm -r ../facebook-android-sdk-3.7/facebook/bin/res/crunch
+	fi
 	if [ $instance = "dev" ]; then
 		cordova build
 	else
