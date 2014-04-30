@@ -33,12 +33,21 @@ deployid="##DEPLOYID##"
 deployversion="##DEPLOYVERSION##"
 deployversioncode="##DEPLOYVERSIONCODE##"
 deployprojectname="##DEPLOYGITNAME##"
+# Colors
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+endcolor=$(tput sgr 0)
+# Font Size
+bold=$(tput bold)
+# Display Handlers
+success="${green}${bold}"
+failure="${red}${bold}"
 
 # Functions
 # Help 
 function help {
-	echo '
-REFERENCE: These paramters are needed to build fantain application
+	echo "
+${bold}REFERENCE:${endcolor} These paramters are needed to build fantain application
 
 	      	Try fantainbuild 
 			-t {android | website} 
@@ -51,18 +60,18 @@ REFERENCE: These paramters are needed to build fantain application
 			-c {version code number}
 			-x {true | false}
 
-Example
+${bold}EXAMPLE${endcolor}
 ------- 
-fantainbuild -t android -i fantain -s dev -u true -n v1.0 -d "my-git-desc" -v 3.0 -c 1 -x false
+${success}fantainbuild -t android -i fantain -s dev -u true -n v1.0 -d my-git-desc -v 3.0 -c 1 -x false${endcolor}
 
-For Detailed description of the parameters, try man fantainbuild
-'
+For Detailed description of the parameters, try ${bold}man fantainbuild${endcolor}
+"
 }
 # Create a new build folder and copy the codebase to it
 function newcodebase {
 	echo "${newline}Copying Files....."
   	if [ "$(ls -A $basedir)" ]; then
-              	 cp -a -u  .  $basedir
+              	 rsync -au $FANTAIN_HOME $basedir
         else
 		 cp -a  . $basedir
 	fi
@@ -209,9 +218,9 @@ fi
 function errorhandling() {
 	help
 	if [ -z $2 ]; then 
-		echo "${newline}SPECIFIC ERROR:$1 Not Set with correct value. Please Try again"
+		echo "${red}${bold}SPECIFIC ERROR:$1 Not Set with correct value. Please Try again${endcolor}"
 	else
-		echo "${newline}SPECIFIC ERROR: Unknown bug while setting $1. Please Try again"
+		echo "${red}${bold}SPECIFIC ERROR: Unknown bug while setting $1. Please Try again{$endcolor}"
 	fi
 }
 
