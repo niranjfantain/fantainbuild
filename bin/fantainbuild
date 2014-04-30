@@ -62,7 +62,7 @@ ${bold}REFERENCE:${endcolor} These paramters are needed to build fantain applica
 
 ${bold}EXAMPLE${endcolor}
 ------- 
-${success}fantainbuild -t android -i fantain -s dev -u true -n v1.0 -d my-git-desc -v 3.0 -c 1 -x false${endcolor}
+${success}fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d my-git-desc -v 3.0 -c 1 -x false${endcolor}
 
 For Detailed description of the parameters, try ${bold}man fantainbuild${endcolor}
 "
@@ -71,7 +71,7 @@ For Detailed description of the parameters, try ${bold}man fantainbuild${endcolo
 function newcodebase {
 	echo "${newline}Copying Files....."
   	if [ "$(ls -A $basedir)" ]; then
-              	 rsync -au $FANTAIN_HOME $basedir
+              	 rsync -a -u $FANTAIN_HOME $basedir
         else
 		 cp -a  . $basedir
 	fi
@@ -192,6 +192,11 @@ function initiatebuild {
         newcodebase
         # Gittagging for new codebase
         cd $basedir
+	test=`git tag | egrep -o "$gittagname$"`
+	if  [ ! -z $test ];then
+		echo "Git tag name already exists,Kindly change the git tag name"
+		exit
+	fi
         git tag -a "$gittagname" -m "$gittagdesc"
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml
