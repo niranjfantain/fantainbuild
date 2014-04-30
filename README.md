@@ -37,7 +37,7 @@ Installing the man file
 Prerequesites
 =============
 
-1.) In fantainEnv.js make sure that installation=_DEPLOY_INSTALLATION_
+1.) In fantainEnv.js make sure that installation=\`_DEPLOY_INSTALLATION_
 
 2.) In fantainEnv.js make sure that env=_DEPLOY_INSTANCE_
 
