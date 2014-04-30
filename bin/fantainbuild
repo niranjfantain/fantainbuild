@@ -27,12 +27,13 @@ prodapkfantain="com.fantain.comainapp"
 devapksrh="com.fantain.srhdev"
 prodapksrh="com.fantain.srh"
 # Search strings
-deployinstallation="##DEPLOYINSTALLATION##"
-deployinstance="##DEPLOYINSTANCE##"
-deployid="##DEPLOYID##"
-deployversion="##DEPLOYVERSION##"
-deployversioncode="##DEPLOYVERSIONCODE##"
-deployprojectname="##DEPLOYGITNAME##"
+deployinstallation="_DEPLOY_INSTALLATION_"
+deployinstance="_DEPLOY_INSTANCE_"
+deployid="_DEPLOY_ID_"
+deployversion="_DEPLOY_VERSION_"
+deployversioncode="_DEPLOY_VERSION_CODE_"
+deployprojectname="_DEPLOY_GIT_NAME_"
+deployapkname="_DEPLOY_APK_NAME_"
 # Colors
 red=$(tput setaf 1)
 green=$(tput setaf 2)
