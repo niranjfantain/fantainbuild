@@ -20,29 +20,22 @@
 # common
 newline='
 '
-basedir="../BuildApplication"
+# Fantain project Environment Value
+project=$FANTAIN_HOME
 # Environment 
 devapkfantain="com.fantain.fantain"
 prodapkfantain="com.fantain.comainapp"
 devapksrh="com.fantain.srhdev"
 prodapksrh="com.fantain.srh"
 # Assets Folder
-srhassets="$basedir/srh-assets"
-fantainassets="$basedir/fantain-assets"
-# Search strings
-deployinstallation="_DEPLOY_INSTALLATION_"
-deployinstance="_DEPLOY_INSTANCE_"
-deployid="_DEPLOY_ID_"
-deployversion="_DEPLOY_VERSION_"
-deployversioncode="_DEPLOY_VERSION_CODE_"
-deployprojectname="_DEPLOY_GIT_NAME_"
-deployapkname="_DEPLOY_APK_NAME_"
+srhassets="$project/srh-assets"
+fantainassets="$project/fantain-assets"
 
 # Functions
 # Help 
 function help {
 	echo "
-${bold}REFERENCE:${endcolor} These paramters are needed to build fantain application
+REFERENCE: These paramters are needed to build fantain application
 
 	      	Try fantainbuild 
 			-t {android | website} 
@@ -62,56 +55,40 @@ fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d my-git-desc -v 3.0 
 For Detailed description of the parameters, try man fantainbuild
 "
 }
-# Create a new build folder and copy the codebase to it
-function newcodebase {
-	echo "${newline}Copying Files....."
-  	if [ "$(ls -A $basedir)" ]; then
-              	 rsync -au  $FANTAIN_HOME $basedir
-        else
-		 rsync -a  $FANTAIN_HOME $basedir
-	fi
-	rm -r $srhassets $fantainassets
-	echo "${newline}Your new codebase is in this location ${newline} $basedir"
-	# Files Required to build the application with the complete path
-        configxml=$basedir/config.xml
-        fantainEnvjs=$basedir/www/js/f/fantainEnv.js
-        AndroidManifestxml=$basedir/platforms/android/AndroidManifest.xml
-        Buildxml=$basedir/platforms/android/build.xml
-}
 # Check for important files in the new codebase
 function checkfile() {
-	if [ -f $1 ] && [ -f $2 ] && [ -f $s3 ]; then
+	if [ -f $1 ] && [ -f $2 ] && [ -f $3 ] && [ -f $4 ]; then
 		echo "${newline}Important Files that are needed to create build seems to be good"
 	else
-		echo "${newline}Files Missing. Go to your root directory and try again" 
+		echo "${newline}Important Files need to set the play as per your needs are missing. Please Check your codebase"
+		exit 
 	fi
 }
 # Find the Text and Replace with the platform specific values
 function searchandreplace() {
-	search=$2
-	replace=$3
-  	  grep "$search" $1 &> /dev/null
+	  filename=$1
+	  search=$2
+	  replace=$3
+	  echo $search
+          echo $replace
+  	  grep "$search" $filename &> /dev/null
   	  if [ $? -ne 0 ]; then
-    		echo "${newline}Unable to set your environment value(s) in $1!" 
-		echo "The same file in your code base is to be changed with default value(s).This is mandatory to do the build."
-		echo "Please Refer README.md Prerequesites to make yourself comfortable to do the change"
+    		echo "${newline}Unable to set your environment value(s) in $filename!" 
 		exit
   	  else
 		# Replace the search string with replace string based on the OS
 		ostype=$(uname)
 		if [ $ostype = 'Darwin' ]; then
-    			sed -i '' "s/$search/$replace/" $1
+    			sed -i '' "s/$search/$replace/" $filename
 		else
-			sed -i "s/$search/$replace/" $1
+			sed -i "s/$search/$replace/" $filename
 		fi
   	  fi
 }
 # Build Application for website
 function buildwebsite {
-	searchandreplace $fantainEnvjs $deployinstallation $installation
-	searchandreplace $fantainEnvjs $deployinstance $instance
 	echo "${newline}Enivronments are set as per your needs"	  
-	cd $basedir
+	cd $project
         echo "${newline}Fantain Build is Started"
 	node r.js -o fantain-build.js
 	echo "${newline}Checking Node server status"
@@ -126,46 +103,19 @@ function buildwebsite {
 }
 # Build APK for mobiles
 function buildapk {
-	searchandreplace $fantainEnvjs $deployinstallation $installation 
-	searchandreplace $fantainEnvjs $deployinstance $instance
-	searchandreplace $configxml $deployversion $version
-	searchandreplace $configxml $deployapkname "$installation-$gittagname"
-	if [ $production = "false" ]; then 
-		searchandreplace $Buildxml $deployprojectname "$installation-$gittagname"
-	else
-		searchandreplace $Buildxml $deployprojectname "$installation"
-	fi
-	searchandreplace $AndroidManifestxml $deployversioncode $versioncode
-	if [ $instance = 'dev' ]; then
-		if [ $installation = 'fantain' ]; then
-			searchandreplace $configxml $deployid "$devapkfantain-$gittagname"
-		else
-			searchandreplace $configxml $deployid "$devapksrh-$gittagname"
-
-		fi
-	elif [ $instance = 'prod' ]; then
-                if [ $installation = 'fantain' ]; then
-                        searchandreplace $configxml $deployid "$prodapkfantain"
-                else
-                        searchandreplace $configxml $deployid "$prodapksrh"
-                fi
-	else
-		if [ $installation = 'fantain' ]; then
-                        echo "${newline}This installation under construction.Try again to get your APK"
-			exit 
-                else
-                        echo "${newline}This installation under construction.Try again to get your APK" 
-			exit
-                fi
-	fi
+	searchandreplace $configxml $searchversion $replaceversion
+	searchandreplace $configxml $searchapkname $replaceapkname
+	searchandreplace $Buildxml $searchprojectname $replaceprojectname
+	searchandreplace $AndroidManifestxml $searchversioncode $replaceversioncode
+	searchandreplace $configxml $searchid $replaceid
 	echo "${newline}Enivronments are set as per your needs"
-	if [ ! -d "$basedir/apk" ]; then
-                mkdir -p "$basedir/apk"
+	if [ ! -d "$project/apk" ]; then
+		mkdir -p "$project/apk"
         fi
 	echo "${newline}Fantain Build is Started"
 	node r.js -o fantain-build.js
 	echo "${newline}APK Build process started"
-	cd $basedir
+	cd $project
 	# For Removing the Crunch directory
 	if [ -d ../facebook-android-sdk-3.7/facebook/bin/res/crunch ]; then
 		rm -r ../facebook-android-sdk-3.7/facebook/bin/res/crunch
@@ -173,45 +123,87 @@ function buildapk {
 	# To make the cordova build according to the instance
 	if [ $instance = "dev" ]; then
 		cordova build
-		cp "$basedir/platforms/android/ant-build/$installation-$gittagname-debug.apk" "$basedir/apk"
+		cp "$project/platforms/android/ant-build/$installation-$gittagname-debug.apk" "$project/apk"
 	else
 		cordova build --release
-		cp "$basedir/platforms/android/ant-build/$installation-release.apk" "$basedir/apk"
+		cp "$project/platforms/android/ant-build/$installation-release.apk" "$project/apk"
 	fi
 	echo "${newline}Get your new APK at $basedir/apk"
 }
 # Intiates the Build Process
 function initiatebuild {
-	# Creating a Base Directory
-        if [ ! -d $basedir ]; then
-                mkdir -p $basedir
-        fi
-        # Copying the codebase to a new Folder
-        newcodebase
         # Gittagging for new codebase
-        cd $basedir
-	test=`git tag | egrep -o "$gittagname$"`
-	if  [ ! -z $test ];then
-		echo "Git tag name already exists,Kindly change the git tag name"
+        cd $project
+	testgittag=`git tag | egrep -o "$gittagname$"`
+	if  [ ! -z $testgittag ];then
+		echo "Gittag name already exists,Kindly change your gittag name"
 		exit
 	fi
         git tag -a "$gittagname" -m "$gittagdesc"
-        # Check the important files which are need to build the application
-       	checkfile $configxml $fantainEnvjs $AndroidManifestxml
-	if [ $installation = 'fantain' ]; then
-             cp -ar $FANTAIN_HOME/fantain-assets/ $basedir
+	# Important Files need to set the environment
+	configxml=$project/config.xml
+	fantainEnvjs=$project/www/js/f/fantainEnv.js
+	AndroidManifestxml=$project/platforms/android/AndroidManifest.xml
+	Buildxml=$project/platforms/android/build.xml
+	# Search and Replace the Requested environment files
+	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
+	searchinstallation="fg.installation='[a-zA-Z0-9\#]*';"
+	replaceinstallation="fg.installation='$installation';"
+	searchinstance="fg.env='[a-zA-Z0-9\#]*';"
+	replaceinstance="fg.env='$instance';"
+	searchversion="version=\"$searchpattern\""
+	replaceversion="version=\"$version\""
+	searchapkname="<name>"
+	if [ $production = "false" ]; then
+                replaceapkname="<name>$installation-$gittagname</name>"
         else
-             cp -ar $FANTAIN_HOME/srh-assets/ $basedir
+                replaceapkname="<name>$installation</name>"
         fi
+	searchprojectname="name=\"$searchpattern\""
+	if [ $production = "false" ]; then
+		replaceprojectname="name=\"$installation-$gittagname\""
+	else
+		replaceprojectname="name=\"$installation\""	
+	fi
+	searchversioncode="versionCode=\"$searchpattern\""
+	replaceversioncode="versionCode=\"$versioncode\""
+	searchid="id=\"$searchpattern\""
+	if [ $instance = 'dev' ]; then
+                if [ $installation = 'fantain' ]; then
+                        replaceid="id=\"$devapkfantain-$gittagname\""
+                else
+                        replaceid="id=\"$devapksrh-$gittagname\""
+
+                fi
+        elif [ $instance = 'prod' ]; then
+                if [ $installation = 'fantain' ]; then
+                        replaceid="id=\"$prodapkfantain\""
+                else
+                        replaceid="id=\"$prodapksrh\""
+                fi
+        else
+                if [ $installation = 'fantain' ]; then
+                        echo "${newline}This installation under construction.Try again to get your APK"
+                        exit
+                else
+                        echo "${newline}This installation under construction.Try again to get your APK"
+                        exit
+                fi
+        fi
+        # Check the important files which are need to build the application
+       	checkfile $configxml $fantainEnvjs $AndroidManifestxml $Buildxml
+	if [ $installation = 'fantain' ]; then
+             cp -a -r $project/fantain-assets/* $project
+        else
+             cp -a -r $project/srh-assets/* $project
+        fi
+	# Common environment change for both mobile and desktop
+	searchandreplace $fantainEnvjs $searchinstallation $replaceinstallation
+        searchandreplace $fantainEnvjs $searchinstance $replaceinstance
 	# To Build the application based on the platform
         if [ $platform = 'website' ]; then
-              cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
               buildwebsite
         else
-              cp $FANTAIN_HOME/www/js/f/fantainEnv.js $basedir/$fantainEnvjs
-              cp $FANTAIN_HOME/config.xml $basedir/$configxml
-              cp $FANTAIN_HOME/platforms/android/AndroidManifest.xml $basedir/$AndroidManifestxml
-	      cp $FANTAIN_HOME/platforms/android/build.xml $basedir/$Buildxml
               buildapk
         fi
 }
@@ -219,7 +211,7 @@ function initiatebuild {
 # Trigerring Help Function when there is no paramter
 if test $# -eq 0; then
 	help
-	echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
+	echo "SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 	exit 0
 fi
 # InSpecific Errors Messages
@@ -310,7 +302,7 @@ do
                         exit
                    fi;;
 		*) help
-		   echo "${newline}SPECIFIC ERROR: Build accpets only above parameters"
+		   echo "SPECIFIC ERROR: Build accpets only above parameters"
 		   exit
         esac
 done
@@ -318,7 +310,7 @@ done
 # Checking whether all parameters are set to build the application
 if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z "$gittagname" ] || [ -z "$gittagdesc" ] || [ -z "$version" ] || [ -z "$versioncode" ] || [ -z $production ]; then
 	help
-	echo "${newline}SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
+	echo "SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 	exit
 else
 	# All set Need to Transfer the Files from working directory
