@@ -61,8 +61,6 @@ function searchandreplace() {
 	  filename=$1
 	  search=$2
 	  replace=$3
-	  echo $search
-	  echo $replace 
   	  grep "$search" $filename &> /dev/null
   	  if [ $? -ne 0 ]; then
     		echo "${newline}Unable to set your environment value(s) in $filename!" 
@@ -133,11 +131,10 @@ function initiatebuild {
 	replaceinstance="\1'$instance';"
 	searchversion="\(version=\)\"$searchpattern\""
 	replaceversion="\1\"$version\""
-	searchapkname="\(<name>\)"
+	searchapkname="\(<name>\)$searchpattern"
 	searchprojectname="\(name=\)\"$searchpattern\""
 	if [ $production = "false" ]; then
                 replaceapkname="\1$installation-$gittagname"
-		echo $replaceapkname
 		replaceprojectname="\1\"$installation-$gittagname\""
         else
                 replaceapkname="\1$installation"
