@@ -22,11 +22,6 @@ newline='
 '
 # Fantain project Environment Value
 project=$FANTAIN_HOME
-# Environprodament 
-devapkfantain="com.fantain.fantain"
-prodapkfantain="com.fantain.comainapp"
-devapksrh="com.fantain.srhdev"
-prodapksrh="com.fantain.srh"
 # Assets Folder
 srhassets="$project/srh-assets"
 fantainassets="$project/fantain-assets"
@@ -139,9 +134,9 @@ function initiatebuild {
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
 	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
-	searchinstallation="fg.installation='[a-zA-Z0-9\#\_\.\-]*';"
+	searchinstallation="fg.installation[[:blank:]]=[[:blank:]]'[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstallation="fg.installation='$installation';"
-	searchinstance="fg.env='[a-zA-Z0-9\#\_\.\-]*';"
+	searchinstance="fg.env[[:blank:]]=[[:blank:]]'[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstance="fg.env='$instance';"
 	searchversion="version=\"$searchpattern\""
 	replaceversion="version=\"$version\""
@@ -157,14 +152,22 @@ function initiatebuild {
 	searchversioncode="versionCode=\"$searchpattern\""
 	replaceversioncode="versionCode=\"$versioncode\""
 	searchid="id=\"$searchpattern\""
-	if [ $instance = 'dev' ]; then
-                replaceid="id=\"$devapk$installation-$gittagname\""
-        elif [ $instance = 'prod' ]; then
-                replaceid="id=\"$prodapk$installation\""
-        else
-                echo "${newline}This installation under construction.Try again to get your APK"
-		exit
-        fi
+	if [ $installation = 'fantain' ]; then
+		if [ $instance = 'dev' ]; then
+			replaceid="id=\"com.fantain.$installation-$gittagname\""
+		else
+			replaceid="id=\"com.fantain.comainapp\""
+		fi
+	else
+		if [ $instance = 'dev' ]; then
+			replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
+        	elif [ $instance = 'prod' ]; then
+                	replaceid="id=\"com.fantain.$installation\""
+        	else
+                	echo "${newline}This installation under construction.Try again to get your APK"
+			exit
+        	fi
+	fi
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml $Buildxml
 	# Copying the Appropriate Assets Files
