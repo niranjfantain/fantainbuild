@@ -127,7 +127,7 @@ function initiatebuild {
 	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
 	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstallation="fg.installation='$installation';"
-	searchinstance="fg.env[[:blank:]]=[[:blank:]]'[a-zA-Z0-9\#\_\.\-]*';"
+	searchinstance="fg.env[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstance="fg.env='$instance';"
 	searchversion="version=\"$searchpattern\""
 	replaceversion="version=\"$version\""
