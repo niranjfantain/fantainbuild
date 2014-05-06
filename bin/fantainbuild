@@ -22,7 +22,7 @@ newline='
 '
 # Fantain project Environment Value
 project=$FANTAIN_HOME
-# Environment 
+# Environprodament 
 devapkfantain="com.fantain.fantain"
 prodapkfantain="com.fantain.comainapp"
 devapksrh="com.fantain.srhdev"
@@ -102,7 +102,7 @@ function buildwebsite {
 	google-chrome www.local.fantain.com:8080 &
 }
 # Build APK for mobiles
-function buildapk {
+function buildandroid {
 	searchandreplace $configxml $searchversion $replaceversion
 	searchandreplace $configxml $searchapkname $replaceapkname
 	searchandreplace $Buildxml $searchprojectname $replaceprojectname
@@ -132,14 +132,6 @@ function buildapk {
 }
 # Intiates the Build Process
 function initiatebuild {
-        # Gittagging for new codebase
-        cd $project
-	testgittag=`git tag | egrep -o "$gittagname$"`
-	if  [ ! -z $testgittag ];then
-		echo "Gittag name already exists,Kindly change your gittag name"
-		exit
-	fi
-        git tag -a "$gittagname" -m "$gittagdesc"
 	# Important Files need to set the environment
 	configxml=$project/config.xml
 	fantainEnvjs=$project/www/js/f/fantainEnv.js
@@ -147,65 +139,42 @@ function initiatebuild {
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
 	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
-	searchinstallation="fg.installation='[a-zA-Z0-9\#]*';"
+	searchinstallation="fg.installation='[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstallation="fg.installation='$installation';"
-	searchinstance="fg.env='[a-zA-Z0-9\#]*';"
+	searchinstance="fg.env='[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstance="fg.env='$instance';"
 	searchversion="version=\"$searchpattern\""
 	replaceversion="version=\"$version\""
 	searchapkname="<name>"
-	if [ $production = "false" ]; then
-                replaceapkname="<name>$installation-$gittagname</name>"
-        else
-                replaceapkname="<name>$installation</name>"
-        fi
 	searchprojectname="name=\"$searchpattern\""
 	if [ $production = "false" ]; then
+                replaceapkname="<name>$installation-$gittagname</name>"
 		replaceprojectname="name=\"$installation-$gittagname\""
-	else
-		replaceprojectname="name=\"$installation\""	
-	fi
+        else
+                replaceapkname="<name>$installation</name>"
+		replaceprojectname="name=\"$installation\""
+        fi
 	searchversioncode="versionCode=\"$searchpattern\""
 	replaceversioncode="versionCode=\"$versioncode\""
 	searchid="id=\"$searchpattern\""
 	if [ $instance = 'dev' ]; then
-                if [ $installation = 'fantain' ]; then
-                        replaceid="id=\"$devapkfantain-$gittagname\""
-                else
-                        replaceid="id=\"$devapksrh-$gittagname\""
-
-                fi
+                replaceid="id=\"$devapk$installation-$gittagname\""
         elif [ $instance = 'prod' ]; then
-                if [ $installation = 'fantain' ]; then
-                        replaceid="id=\"$prodapkfantain\""
-                else
-                        replaceid="id=\"$prodapksrh\""
-                fi
+                replaceid="id=\"$prodapk$installation\""
         else
-                if [ $installation = 'fantain' ]; then
-                        echo "${newline}This installation under construction.Try again to get your APK"
-                        exit
-                else
-                        echo "${newline}This installation under construction.Try again to get your APK"
-                        exit
-                fi
+                echo "${newline}This installation under construction.Try again to get your APK"
+		exit
         fi
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml $Buildxml
-	if [ $installation = 'fantain' ]; then
-             cp -a -r $project/fantain-assets/* $project
-        else
-             cp -a -r $project/srh-assets/* $project
-        fi
+	# Copying the Appropriate Assets Files
+        cp -a $project/$installation-assets/* $project
 	# Common environment change for both mobile and desktop
 	searchandreplace $fantainEnvjs $searchinstallation $replaceinstallation
         searchandreplace $fantainEnvjs $searchinstance $replaceinstance
 	# To Build the application based on the platform
-        if [ $platform = 'website' ]; then
-              buildwebsite
-        else
-              buildapk
-        fi
+        build$platform
+	git tag -a "$gittagname" -m "$gittagdesc"
 }
 
 # Trigerring Help Function when there is no paramter
@@ -316,9 +285,15 @@ else
 	# All set Need to Transfer the Files from working directory
 	echo "${newline}Hurray!! All Parameters are Good"
 	# All set. Build Process will be initiated
-	if [ ! -z $FANTAIN_HOME ]; then
-      		if [ -d $FANTAIN_HOME/www ]; then
-			cd $FANTAIN_HOME
+	if [ ! -z $project ]; then
+      		if [ -d $project/www ]; then
+			cd $project
+			# Checking Gittag name for the codebase
+			testgittag=`git tag | egrep -o "$gittagname$"`
+        		if  [ ! -z $testgittag ];then
+                		echo "Gittag name already exists,Kindly change your gittag name"
+                		exit
+        		fi
        			initiatebuild
       		else
 			echo "${newline}Your Environment variable is wrong,kindly change the environment variable and try again" 
