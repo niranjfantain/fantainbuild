@@ -4,17 +4,17 @@
 #!/bin/bash
 
 #Matrix Table to set the environment for build to be smooth
-#----------------------------------------------------------------------------------------
-#                WEBSITE                                  ANDROID
-#----------------------------------------------------------------------------------------
-#       FANTAIN               SRH                    FANTAIN                 SRH
-#----------------------------------------------------------------------------------------
-#DEV      NA                   NA               com.fantain.fantain    com.fantain.srhdev
-#----------------------------------------------------------------------------------------
-#TEST     NA                   NA                      NA                  NA
-#----------------------------------------------------------------------------------------
-#PROD     NA                   NA               com.fantain.comainapp  com.fantain.srh
-#----------------------------------------------------------------------------------------
+#--------------------------------------------------
+#                        ANDROID
+#--------------------------------------------------
+#            FANTAIN                 SRH
+#--------------------------------------------------
+#DEV    com.fantain.fantain    com.fantain.srhdev
+#--------------------------------------------------
+#TEST           NA                   NA              
+#--------------------------------------------------
+#PROD   com.fantain.comainapp  com.fantain.srh
+#--------------------------------------------------
   
 # Variables 
 # common
@@ -61,6 +61,8 @@ function searchandreplace() {
 	  filename=$1
 	  search=$2
 	  replace=$3
+	  echo $search
+	  echo $replace 
   	  grep "$search" $filename &> /dev/null
   	  if [ $? -ne 0 ]; then
     		echo "${newline}Unable to set your environment value(s) in $filename!" 
@@ -69,9 +71,9 @@ function searchandreplace() {
 		# Replace the search string with replace string based on the OS
 		ostype=$(uname)
 		if [ $ostype = 'Darwin' ]; then
-    			sed -i '' "s/$search/$replace/" $filename
+    			 sed -i '' "s/$search/$replace/" $filename
 		else
-			sed -i "s/$search/$replace/" $filename
+			 sed -i "s/$search/$replace/" $filename
 		fi
   	  fi
 }
@@ -125,35 +127,35 @@ function initiatebuild {
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
 	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
-	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
-	replaceinstallation="fg.installation='$installation';"
-	searchinstance="fg.env[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
-	replaceinstance="fg.env='$instance';"
-	searchversion="version=\"$searchpattern\""
-	replaceversion="version=\"$version\""
-	searchapkname="<name>"
-	searchprojectname="name=\"$searchpattern\""
+	searchinstallation="\(fg.installation=\)'[a-zA-Z0-9\#\_\.\-]*';"
+	replaceinstallation="\1'$installation';"
+	searchinstance="\(fg.env=\)'[a-zA-Z0-9\#\_\.\-]*';"
+	replaceinstance="\1'$instance';"
+	searchversion="\(version=\)\"$searchpattern\""
+	replaceversion="\1\"$version\""
+	searchapkname="\(<name>\)"
+	searchprojectname="\(name=\)\"$searchpattern\""
 	if [ $production = "false" ]; then
-                replaceapkname="<name>$installation-$gittagname</name>"
-		replaceprojectname="name=\"$installation-$gittagname\""
+                replaceapkname="\1$installation-$gittagname</name>"
+		replaceprojectname="\1\"$installation-$gittagname\""
         else
-                replaceapkname="<name>$installation</name>"
-		replaceprojectname="name=\"$installation\""
+                replaceapkname="\1$installation</name>"
+		replaceprojectname="\1\"$installation\""
         fi
-	searchversioncode="versionCode=\"$searchpattern\""
-	replaceversioncode="versionCode=\"$versioncode\""
-	searchid="id=\"$searchpattern\""
+	searchversioncode="\(versionCode=\)\"$searchpattern\""
+	replaceversioncode="\1\"$versioncode\""
+	searchid="\(id=\)\"$searchpattern\""
 	if [ $installation = 'fantain' ]; then
 		if [ $instance = 'dev' ]; then
-			replaceid="id=\"com.fantain.$installation-$gittagname\""
+			replaceid="\1\"com.fantain.$installation-$gittagname\""
 		else
-			replaceid="id=\"com.fantain.comainapp\""
+			replaceid="\1\"com.fantain.comainapp\""
 		fi
 	else
 		if [ $instance = 'dev' ]; then
-			replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
+			replaceid="\1\"com.fantain.$installation$instance-$gittagname\""
         	elif [ $instance = 'prod' ]; then
-                	replaceid="id=\"com.fantain.$installation\""
+                	replaceid="\1\"com.fantain.$installation\""
         	else
                 	echo "${newline}This installation under construction.Try again to get your APK"
 			exit
