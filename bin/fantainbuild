@@ -125,7 +125,7 @@ function initiatebuild {
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
 	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
-	searchinstallation="fg.installation[[:blank:]]=[[:blank:]]'[a-zA-Z0-9\#\_\.\-]*';"
+	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstallation="fg.installation='$installation';"
 	searchinstance="fg.env[[:blank:]]=[[:blank:]]'[a-zA-Z0-9\#\_\.\-]*';"
 	replaceinstance="fg.env='$instance';"
