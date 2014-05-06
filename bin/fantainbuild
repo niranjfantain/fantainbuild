@@ -22,9 +22,6 @@ newline='
 '
 # Fantain project Environment Value
 project=$FANTAIN_HOME
-# Assets Folder
-srhassets="$project/srh-assets"
-fantainassets="$project/fantain-assets"
 
 # Functions
 # Help 
