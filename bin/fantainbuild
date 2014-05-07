@@ -61,6 +61,8 @@ function searchandreplace() {
 	  filename=$1
 	  search=$2
 	  replace=$3
+	  echo $search
+	  echo $replace
   	  grep "$search" $filename &> /dev/null
   	  if [ $? -ne 0 ]; then
     		echo "${newline}Unable to set your environment value(s) in $filename!" 
@@ -124,36 +126,36 @@ function initiatebuild {
 	AndroidManifestxml=$project/platforms/android/AndroidManifest.xml
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
-	searchpattern="[a-zA-Z0-9\#\.\_\-]*"
-	searchinstallation="\(fg.installation[[:blank:]]*=[[:blank:]]*\)'[a-zA-Z0-9\#\_\.\-]*';"
-	replaceinstallation="\1'$installation';"
-	searchinstance="\(fg.env[[:blank:]]*=[[:blank:]]*\)'[a-zA-Z0-9\#\_\.\-]*';"
-	replaceinstance="\1'$instance';"
-	searchversion="\(version=\)\"$searchpattern\""
-	replaceversion="\1\"$version\""
-	searchapkname="\(<name>\)$searchpattern"
-	searchprojectname="\(name=\)\"$searchpattern\""
+	searchpattern="[a-zA-Z0-9\#\_\-\.]*"
+	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\-\.]*';"
+	replaceinstallation="fg.installation='$installation';"
+	searchinstance="fg.env[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
+	replaceinstance="fg.env='$instance';"
+	searchversion="version=\"$searchpattern\""
+	replaceversion="version=\"$version\""
+	searchapkname="<name>$searchpattern"
+	searchprojectname="name=\"$searchpattern\""
 	if [ $production = "false" ]; then
-                replaceapkname="\1$installation-$gittagname"
-		replaceprojectname="\1\"$installation-$gittagname\""
+                replaceapkname="<name>$installation-$gittagname"
+		replaceprojectname="name=\"$installation-$gittagname\""
         else
-                replaceapkname="\1$installation"
-		replaceprojectname="\1\"$installation\""
+                replaceapkname="<name>$installation"
+		replaceprojectname="name=\"$installation\""
         fi
-	searchversioncode="\(versionCode=\)\"$searchpattern\""
-	replaceversioncode="\1\"$versioncode\""
-	searchid="\(id=\)\"$searchpattern\""
+	searchversioncode="versionCode=\"$searchpattern\""
+	replaceversioncode="versionCode=\"$versioncode\""
+	searchid="id=\"$searchpattern\""
 	if [ $installation = 'fantain' ]; then
 		if [ $instance = 'dev' ]; then
-			replaceid="\1\"com.fantain.$installation-$gittagname\""
+			replaceid="id=\"com.fantain.$installation-$gittagname\""
 		else
-			replaceid="\1\"com.fantain.comainapp\""
+			replaceid="id=\"com.fantain.comainapp\""
 		fi
 	else
 		if [ $instance = 'dev' ]; then
-			replaceid="\1\"com.fantain.$installation$instance-$gittagname\""
+			replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
         	elif [ $instance = 'prod' ]; then
-                	replaceid="\1\"com.fantain.$installation\""
+                	replaceid="id=\"com.fantain.$installation\""
         	else
                 	echo "${newline}This installation under construction.Try again to get your APK"
 			exit
@@ -162,8 +164,7 @@ function initiatebuild {
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml $Buildxml
 	# Copying the Appropriate Assets Files
-        cp -a $project/$installation-assets/* $project
-	# Common environment change for both mobile and desktop
+        cp -a $project/$installation-assets/* $project	# Common environment change for both mobile and desktop
 	searchandreplace $fantainEnvjs $searchinstallation $replaceinstallation
         searchandreplace $fantainEnvjs $searchinstance $replaceinstance
 	# To Build the application based on the platform
