@@ -126,7 +126,7 @@ function initiatebuild {
 	AndroidManifestxml=$project/platforms/android/AndroidManifest.xml
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
-	searchpattern="[a-zA-Z0-9\#_-.]*"
+	searchpattern="[a-zA-Z0-9\#_-.[:blank:]]*"
 	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\-\.]*';"
 	replaceinstallation="fg.installation='$installation';"
 	searchinstance="fg.env[[:blank:]]*=[[:blank:]]*'[a-zA-Z0-9\#\_\.\-]*';"
