@@ -136,10 +136,10 @@ function initiatebuild {
 	searchapkname="<name>$searchpattern"
 	searchprojectname="name=\"$searchpattern\""
 	if [ $production = "false" ]; then
-                replaceapkname="<name>$installation-$gittagname"
+                replaceapkname="<name>$installation-$gittagname</name>"
 		replaceprojectname="name=\"$installation-$gittagname\""
         else
-                replaceapkname="<name>$installation"
+                replaceapkname="<name>$installation</name>"
 		replaceprojectname="name=\"$installation\""
         fi
 	searchversioncode="versionCode=\"$searchpattern\""
