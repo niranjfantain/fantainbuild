@@ -61,20 +61,12 @@ function searchandreplace() {
 	  filename=$1
 	  search=$2
 	  replace=$3
-	  echo $search
-	  echo $replace
   	  grep "$search" $filename &> /dev/null
   	  if [ $? -ne 0 ]; then
-    		echo "${newline}Unable to set your environment value(s) in $filename!" 
+    		echo "${newline}Unable to find environment value(s) in $filename!" 
 		exit
   	  else
-		# Replace the search string with replace string based on the OS
-		ostype=$(uname)
-		if [ $ostype = 'Darwin' ]; then
-    			 sed -i '' "s/$search/$replace/" $filename
-		else
-			 sed -i "s/$search/$replace/" $filename
-		fi
+		sed -i "s/$search/$replace/" $filename
   	  fi
 }
 # Build Application for website
@@ -82,7 +74,7 @@ function buildwebsite {
 	echo "${newline}Enivronments are set as per your needs"	  
 	cd $project
         echo "${newline}Fantain Build is Started"
-	node r.js -o fantain-build.js
+	./build
 	echo "${newline}Checking Node server status"
 	nodestatus=$(pgrep node)
 	if [ ! -z $nodestatus ]; then
