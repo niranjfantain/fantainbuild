@@ -1,6 +1,6 @@
 .\" Manpage for fantainbuild.
  
-.TH man 8 "23 Apr 2014" "1.0" "fantainbuild man page"
+.TH man 8 "9 May 2014" "3.0" "fantainbuild man page"
 
 .SH NAME
 fantainbuild  \- build source code as platform specific application.
@@ -17,16 +17,14 @@ Installation to which client the code is about to get deployed.
 Intance to mention the code is in dev / test / prod stage.
 .SH -u [MANDATORY]
 Uglify the code, a javascript to make the code more crisp.
-.SH -n [MANDATORY]
+.SH -n [OPTIONAL]
 Gitname , the name given for the current snapshot of the codebase.
-.SH -d [MANDATORY]
+.SH -d [DEPENDANT MANDATORY]
 Gitdescription , a small reference for the current snapshot of the codebase.
 .SH -v [MANDATORY]
 Version of the codebase realease.
 .SH -c [MANDATORY]
 Version code number of the codebase.
-.SH -x [MANDATORY]
-Development release flag to set the apk name accordingly.
 
 .SH SEE ALSO
 
