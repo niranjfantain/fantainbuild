@@ -68,7 +68,7 @@ function searchandreplace {
 		echo "${newline}Unable to find $search in $filename"	
 		exit
 	  else
-	  	sed -i s/"$search"/"$replace"/ $filename
+	  	sed -i s/$search/$replace/ $filename
 	  fi
 }
 # Build Application for website
@@ -131,6 +131,7 @@ function initiatebuild {
 	replaceversionenv="fg.version=\"$version\";"
 	searchversioncodeenv="fg.versionCode[[:blank:]]*=[[:blank:]]*$searchpattern;"	
 	replaceversioncodeenv="fg.versionCode=\"$versioncode\";"
+	searchandroidpackagename="fg.androidPackageName[[:blank:]]*=[[:blank:]]*$searchpattern;"
 	searchinstance="fg.env[[:blank:]]*=[[:blank:]]*$searchpattern;"
 	replaceinstance="fg.env=\"$instance\";"
 	searchversion="version=\"$searchpattern\""
@@ -151,11 +152,14 @@ function initiatebuild {
 		if [ $instance = 'dev' ]; then
 			if [ ! -z $gittagname ]; then
 				replaceid="id=\"com.fantain.$installation-$gittagname\""
+				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation-$gittagname\";"
 			else
 				replaceid="id=\"com.fantain.$installation\""
+				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation\";"
 			fi
 		elif [ $instance = 'prod' ]; then
 			replaceid="id=\"com.fantain.comainapp\""
+			replaceandroidpackagename="fg.androidPackageName=\"com.fantain.comainapp\";"
 		else
                         echo "${newline}This installation under construction.Try again to get your APK"
                         exit
@@ -164,11 +168,14 @@ function initiatebuild {
 		if [ $instance = 'dev' ]; then 
 			if [ ! -z $gittagname ]; then
 				replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
+				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation$instance-$gittagname\";"
 			else
 				replaceid="id=\"com.fantain.$installation$instance\""
+				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation$instance\";"
 			fi
         	elif [ $instance = 'prod' ]; then
                 	replaceid="id=\"com.fantain.$installation\""
+			replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation\";"
         	else
                 	echo "${newline}This installation under construction.Try again to get your APK"
 			exit
@@ -183,6 +190,7 @@ function initiatebuild {
         searchandreplace $fantainEnvjs $searchinstance $replaceinstance
 	searchandreplace $fantainEnvjs $searchversionenv $replaceversionenv
         searchandreplace $fantainEnvjs $searchversioncodeenv $replaceversioncodeenv
+	searchandreplace $fantainEnvjs $searchandroidpackagename $replaceandroidpackagename
 	# To Build the application based on the platform
         build$platform
 	if [ -n "$gittagname" ] && [ -n "$gittagdesc" ]; then
