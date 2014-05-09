@@ -141,10 +141,10 @@ function initiatebuild {
 	searchprojectname="name=\"$searchpattern\""
 	searchc2dpermission="android:name=\"$searchpattern.permission.C2D_MESSAGE\""
 	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then 
-                replaceapkname="<name>$installation-$gittagname"
+                replaceapkname="<name>${apkname}-$gittagname"
 		replaceprojectname="name=\"$installation-$gittagname\""
         else
-                replaceapkname="<name>$installation"
+                replaceapkname="<name>${apkname}"
 		replaceprojectname="name=\"$installation\""
         fi
 	searchversioncode="versionCode=\"$searchpattern\""
@@ -240,6 +240,14 @@ do
 	    	   fi;;
                 i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
                         installation=$input
+
+                        if [ $input = 'fantain' ]; then
+                            apkname='Fantain'
+                        fi
+                        if [ $input = 'srh' ]; then
+                            apkname='Sunrisers& Hyderabad'
+                        fi
+
 		   else
 		  	errorhandling "Installation"  
                         exit
