@@ -27,22 +27,24 @@ project=$FANTAIN_HOME
 # Help 
 function help {
 	echo "
-REFERENCE: These paramters are needed to build fantain application
+REFERENCE: Try
+MANDATORY PARAMETERS
+--------- ----------
 
-	      	Try fantainbuild 
+	      	  fantainbuild 
 			-t {android | website} 
 			-i {fantain | srh }
 			-s {dev | test | prod}	
 			-u {true | false}
-			-n {gittag name}
-			-d {gittag description}
 			-v {version number}
 			-c {version code number}
-			-x {true | false}
-
+OPTIONAL PARAMETERS
+-------- ----------
+			-n {gittag name}
+                        -d {gittag description}
 EXAMPLE
 ------- 
-fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d my-git-desc -v 3.0 -c 1 -x false
+fantainbuild -t android -i fantain -s dev -u true -n v1_0 -d my-git-desc -v 3.0 -c 1
 
 For Detailed description of the parameters, try man fantainbuild
 "
@@ -61,13 +63,9 @@ function searchandreplace() {
 	  filename=$1
 	  search=$2
 	  replace=$3
-  	  grep "$search" $filename &> /dev/null
-  	  if [ $? -ne 0 ]; then
-    		echo "${newline}Unable to find environment value(s) in $filename!" 
-		exit
-  	  else
-		sed -i "s/$search/$replace/" $filename
-  	  fi
+	  #patternmatched=`cat $filename | sed -n /"$search"/p`
+	  #echo $pattermatched
+	  sed -i s/"$search"/"$replace"/ $filename
 }
 # Build Application for website
 function buildwebsite {
@@ -118,16 +116,20 @@ function initiatebuild {
 	AndroidManifestxml=$project/platforms/android/AndroidManifest.xml
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
-	searchpattern="[a-zA-Z0-9\#_-.[:blank:]\"]*"
-	searchinstallation="fg.installation[[:blank:]]*=$searchpattern;"
+	searchpattern="[a-zA-Z0-9#_-.\"[:blank:]]*"
+	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*$searchpattern;"
 	replaceinstallation="fg.installation=\"$installation\";"
-	searchinstance="fg.env[[:blank:]]*=$searchpattern;"
+	searchversionenv="fg.version[[:blank:]]*=[[:blank:]]*$searchpattern;"
+	replaceversionenv="fg.version=\"$version\";"
+	searchversioncodeenv="fg.versionCode[[:blank:]]*=[[:blank:]]*$searchpattern;"	
+	replaceversioncodeenv="fg.versionCode=\"$versioncode\";"
+	searchinstance="fg.env[[:blank:]]*=[[:blank:]]*$searchpattern;"
 	replaceinstance="fg.env=\"$instance\";"
 	searchversion="version=\"$searchpattern\""
 	replaceversion="version=\"$version\""
 	searchapkname="<name>$searchpattern"
 	searchprojectname="name=\"$searchpattern\""
-	if [ $production = "false" ]; then
+	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then 
                 replaceapkname="<name>$installation-$gittagname"
 		replaceprojectname="name=\"$installation-$gittagname\""
         else
@@ -139,13 +141,24 @@ function initiatebuild {
 	searchid="id=\"$searchpattern\""
 	if [ $installation = 'fantain' ]; then
 		if [ $instance = 'dev' ]; then
-			replaceid="id=\"com.fantain.$installation-$gittagname\""
-		else
+			if [ ! -z $gittagname ]; then
+				replaceid="id=\"com.fantain.$installation-$gittagname\""
+			else
+				replaceid="id=\"com.fantain.$installation\""
+			fi
+		elif [ $instance = 'prod' ]; then
 			replaceid="id=\"com.fantain.comainapp\""
-		fi
+		else
+                        echo "${newline}This installation under construction.Try again to get your APK"
+                        exit
+                fi
 	else
-		if [ $instance = 'dev' ]; then
-			replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
+		if [ $instance = 'dev' ]; then 
+			if [ ! -z $gittagname ]; then
+				replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
+			else
+				replaceid="id=\"com.fantain.$installation$instance\""
+			fi
         	elif [ $instance = 'prod' ]; then
                 	replaceid="id=\"com.fantain.$installation\""
         	else
@@ -156,27 +169,35 @@ function initiatebuild {
         # Check the important files which are need to build the application
        	checkfile $configxml $fantainEnvjs $AndroidManifestxml $Buildxml
 	# Copying the Appropriate Assets Files
-        cp -a $project/$installation-assets/* $project	# Common environment change for both mobile and desktop
+        cp -a $project/$installation-assets/* $project	
+	# Common environment change for both mobile and desktop
 	searchandreplace $fantainEnvjs $searchinstallation $replaceinstallation
         searchandreplace $fantainEnvjs $searchinstance $replaceinstance
+	searchandreplace $fantainEnvjs $searchversionenv $replaceversionenv
+        searchandreplace $fantainEnvjs $searchversioncodeenv $replaceversioncodeenv
 	# To Build the application based on the platform
         build$platform
-	git tag -a "$gittagname" -m "$gittagdesc"
+	if [ -n "$gittagname" ] && [ -n "$gittagdesc" ]; then
+		git tag -a "$gittagname" -m "$gittagdesc"
+	 	echo "${newline}Gittaging done for your codebase"
+	else
+		echo "${newline}Gittaging not done for your codebase."
+	fi
 }
 
 # Trigerring Help Function when there is no paramter
 if test $# -eq 0; then
 	help
-	echo "SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
+	echo "SPECIFIC ERROR: No Parmaters are given. Please Try again"
 	exit 0
 fi
 # InSpecific Errors Messages
 function errorhandling() {
 	help
 	if [ -z $2 ]; then 
-		echo "SPECIFIC ERROR:$1 Not Set with correct value. Please Try again${endcolor}"
+		echo "SPECIFIC ERROR: Please check your $1 paramter.Please Try again"
 	else
-		echo "SPECIFIC ERROR: Unknown bug while setting $1. Please Try again{$endcolor}"
+		echo "SPECIFIC ERROR: Unknown bug in your $1 parameter.Please Try again"
 	fi
 }
 
@@ -190,25 +211,25 @@ do
                 t) if [ $input = 'android' ] || [ $input = 'website' ]; then
 			platform=$input
 		   else
-			errorhandling "Platform" $platform 
+			errorhandling "Platform"
 			exit
 	    	   fi;;
                 i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
                         installation=$input
 		   else
-		  	errorhandling "Installation" $installation      
+		  	errorhandling "Installation"  
                         exit
                    fi;;
                 s) if [ $input = 'dev' ] || [ $input = 'test' ] || [ $input = 'prod' ]; then
                         instance=$input
 		   else
-                        errorhandling "Instance" $instance
+                        errorhandling "Instance"
                         exit
                    fi;;
                 u) if [ $input = 'true' ] || [ $input = 'false' ]; then
                         uglify=$input
 		   else
-                        errorhandling "Uglify" $uglify
+                        errorhandling "Uglify"
                         exit
                    fi;;
 		n) if [ -n "$input" ]; then
@@ -221,40 +242,22 @@ do
 						help
                                 		echo "${newline}SPECIFIC ERROR:Fantainbuild does not allow -n to have .(Dot)"
 						exit;;
-					* ) gittagname=$input
+					* )	gittagname="$input"
 				esac
 		   else
-			errorhandling "Gittag Name" $gittagname
-                        exit
+			gittagname=$input
 		   fi;;
-                d) if [ -n "$input" ]; then
-			gittagdesc="$input"
-		   else
-                        errorhandling "Gittag Description" $gittagdesc
-                        exit
-                   fi;;
+                d) gittagdesc="$input";;
 	     	v) if [ -n "$input" ]; then
 			version="$input"
 		   else
-			errorhandling "Version" $version
+			errorhandling "Version"
                         exit
                    fi;;
 	        c) if [ -n "$input" ]; then
 			versioncode="$input"
 		   else
-                        errorhandling "Version Code" $versioncode
-                        exit
-                   fi;;
-		x) if [ $input = 'true' ] || [ $input = 'false' ]; then
-			if ([ $instance = "prod" ] && [ $input = 'true' ] ) || ([ $instance = "dev" ] && [ $input = 'false' ]); then
-                        	production="$input"
-			else
-				help
-				echo "${newline}SPECIFIC ERROR: You can switch -x true / false only if -s is set to prod / dev respectively"
-				exit
-			fi
-                   else
-                        errorhandling "Production Release" $production
+                        errorhandling "Version Code"
                         exit
                    fi;;
 		*) help
@@ -264,7 +267,7 @@ do
 done
 
 # Checking whether all parameters are set to build the application
-if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z "$gittagname" ] || [ -z "$gittagdesc" ] || [ -z "$version" ] || [ -z "$versioncode" ] || [ -z $production ]; then
+if [ -z $platform ] || [ -z $installation ] || [ -z $instance ] || [ -z $uglify ] || [ -z "$version" ] || [ -z "$versioncode" ]; then
 	help
 	echo "SPECIFIC ERROR: All Parameters are mandatory. Please Try again"
 	exit
@@ -281,7 +284,22 @@ else
                 		echo "Gittag name already exists,Kindly change your gittag name"
                 		exit
         		fi
-       			initiatebuild
+			if [ ! -z $gittagname ];  then
+				if [ ! -z $gittagdesc ]; then 
+					echo "$gittagdesc"
+       					initiatebuild
+				else
+					errorhandling "Gittag Description"
+					exit
+				fi
+			else
+				if [ ! -z $gittagdesc ]; then
+					errorhandling "Gittag Name"
+					exit
+				else
+					initiatebuild
+				fi
+			fi
       		else
 			echo "${newline}Your Environment variable is wrong,kindly change the environment variable and try again" 
       		fi
