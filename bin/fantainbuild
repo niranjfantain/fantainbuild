@@ -93,6 +93,7 @@ function buildandroid {
 	searchandreplace $configxml $searchapkname $replaceapkname
 	searchandreplace $Buildxml $searchprojectname $replaceprojectname
 	searchandreplace $AndroidManifestxml $searchversioncode $replaceversioncode
+	searchandreplace $AndroidManifestxml $searchc2dpermission $replacec2dpermission
 	searchandreplace $configxml $searchid $replaceid
 	echo "${newline}Enivronments are set as per your needs"
 	if [ ! -d "$project/apk" ]; then
@@ -138,6 +139,7 @@ function initiatebuild {
 	replaceversion="version=\"$version\""
 	searchapkname="<name>$searchpattern"
 	searchprojectname="name=\"$searchpattern\""
+	searchc2dpermission="android:name=\"$searchpattern.permission.C2D_MESSAGE\""
 	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then 
                 replaceapkname="<name>$installation-$gittagname"
 		replaceprojectname="name=\"$installation-$gittagname\""
@@ -153,13 +155,16 @@ function initiatebuild {
 			if [ ! -z $gittagname ]; then
 				replaceid="id=\"com.fantain.$installation-$gittagname\""
 				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation-$gittagname\";"
+				replacec2dpermission="android:name=\"com.fantain.$installation-$gittagname.permission.C2D_MESSAGE\""
 			else
 				replaceid="id=\"com.fantain.$installation\""
 				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation\";"
+				replacec2dpermission="android:name=\"com.fantain.$installation.permission.C2D_MESSAGE\""
 			fi
 		elif [ $instance = 'prod' ]; then
 			replaceid="id=\"com.fantain.comainapp\""
 			replaceandroidpackagename="fg.androidPackageName=\"com.fantain.comainapp\";"
+			replacec2dpermission="android:name=\"com.fantain.comainapp.permission.C2D_MESSAGE\""
 		else
                         echo "${newline}This installation under construction.Try again to get your APK"
                         exit
@@ -169,13 +174,16 @@ function initiatebuild {
 			if [ ! -z $gittagname ]; then
 				replaceid="id=\"com.fantain.$installation$instance-$gittagname\""
 				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation$instance-$gittagname\";"
+				replacec2dpermission="android:name=\"com.fantain.$installation$instance-$gittagname.permission.C2D_MESSAGE\""
 			else
 				replaceid="id=\"com.fantain.$installation$instance\""
 				replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation$instance\";"
+				replacec2dpermission="android:name=\"com.fantain.$installation$instance.permission.C2D_MESSAGE\""
 			fi
         	elif [ $instance = 'prod' ]; then
                 	replaceid="id=\"com.fantain.$installation\""
 			replaceandroidpackagename="fg.androidPackageName=\"com.fantain.$installation\";"
+			replacec2dpermission="android:name=\"com.fantain.$installation.permission.C2D_MESSAGE\""
         	else
                 	echo "${newline}This installation under construction.Try again to get your APK"
 			exit
