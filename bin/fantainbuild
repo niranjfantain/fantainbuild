@@ -63,12 +63,12 @@ function searchandreplace {
 	  filename=$1
 	  search=$2
 	  replace=$3
-	  match=$(cat $filename | sed -n /$search/p)
+	  match=$(cat $filename | ssed -n /$search/p)
 	  if [ -z "$match" ]; then
 		echo "${newline}Unable to find $search in $filename"	
 		exit
 	  else
-	  	sed -i s/$search/$replace/ $filename
+	  	ssed -i s/$search/$replace/ $filename
 	  fi
 }
 # Build Application for website
@@ -124,7 +124,7 @@ function initiatebuild {
 	AndroidManifestxml=$project/platforms/android/AndroidManifest.xml
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
-	searchpattern="[a-zA-Z0-9\#\_\-\.\"[:blank:]]*"
+	searchpattern="[a-zA-Z0-9\#\_\.\"[:blank:]\-]*"
 	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*$searchpattern;"
 	replaceinstallation="fg.installation=\"$installation\";"
 	searchversionenv="fg.version[[:blank:]]*=[[:blank:]]*$searchpattern;"
