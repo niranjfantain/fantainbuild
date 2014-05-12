@@ -65,12 +65,12 @@ function searchandreplace {
 	  filename=$1
 	  search=$2
 	  replace=$3
-	  match=$(cat $filename | sed -n /$search/p)
+	  match=$(cat $filename | ssed -n /$search/p)
 	  if [ -z "$match" ]; then
 		echo "${newline}Unable to find $search in $filename"	
 		exit
 	  else
-	  	sed -i s/$search/$replace/ $filename
+	  	ssed -i s/$search/$replace/ $filename
 	  fi
 }
 # Build Application for website
@@ -127,7 +127,7 @@ function initiatebuild {
 	AndroidManifestxml=$project/platforms/android/AndroidManifest.xml
 	Buildxml=$project/platforms/android/build.xml
 	# Search and Replace the Requested environment files
-	searchpattern="[a-zA-Z0-9#_-.\"[:blank:]]*"
+	searchpattern="[a-zA-Z0-9\#\_\.\"[:blank:]\-]*"
 	searchinstallation="fg.installation[[:blank:]]*=[[:blank:]]*$searchpattern;"
 	replaceinstallation="fg.installation=\"$installation\";"
 	searchversionenv="fg.version[[:blank:]]*=[[:blank:]]*$searchpattern;"
@@ -144,13 +144,11 @@ function initiatebuild {
 	searchprojectname="name=\"$searchpattern\""
 	searchc2dpermission="android:name=\"$searchpattern.permission.C2D_MESSAGE\""
 	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then
-		
                 replaceapkname="<name>"$replaceapkname-$gittagname
 		replaceprojectname="name=\"$installation-$gittagname\""
         else
                 replaceapkname="<name>$replaceapkname"
-		replaceprojectname="name=\"$installation\""
-        fi
+	fi
 	searchversioncode="versionCode=\"$searchpattern\""
 	replaceversioncode="versionCode=\"$versioncode\""
 	searchid="id=\"$searchpattern\""
@@ -243,7 +241,19 @@ do
 			exit
 	    	   fi;;
                 i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
+<<<<<<< HEAD
                         installation=$input			
+=======
+                        installation=$input
+
+                        if [ $input = 'fantain' ]; then
+                            apkname='Fantain'
+                        fi
+                        if [ $input = 'srh' ]; then
+                            apkname='Sunrisers& Hyderabad'
+                        fi
+
+>>>>>>> 3983d7f62b9523684193c826913a1d322531c5c9
 		   else
 		  	errorhandling "Installation"  
                         exit
