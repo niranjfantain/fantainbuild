@@ -20,6 +20,8 @@
 # common
 newline='
 '
+srh="Sunrisers Hyderabad"
+fantain="Fantain"
 # Fantain project Environment Value
 project=$FANTAIN_HOME
 
@@ -138,13 +140,15 @@ function initiatebuild {
 	searchversion="version=\"$searchpattern\""
 	replaceversion="version=\"$version\""
 	searchapkname="<name>$searchpattern"
+	replaceapkname=$(eval "echo \$$installation")
 	searchprojectname="name=\"$searchpattern\""
 	searchc2dpermission="android:name=\"$searchpattern.permission.C2D_MESSAGE\""
-	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then 
-                replaceapkname="<name>$installation-$gittagname"
+	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then
+		
+                replaceapkname="<name>"$replaceapkname-$gittagname
 		replaceprojectname="name=\"$installation-$gittagname\""
         else
-                replaceapkname="<name>$installation"
+                replaceapkname="<name>$replaceapkname"
 		replaceprojectname="name=\"$installation\""
         fi
 	searchversioncode="versionCode=\"$searchpattern\""
@@ -227,7 +231,7 @@ function errorhandling() {
 
 # The build kicksoff from here
 # Gettting the parameters from the command 
-while getopts t:i:s:u:n:d:v:c:x: option
+while getopts t:i:s:u:n:d:v:c: option
 do
 	input=`echo ${OPTARG} | tr '[:upper:]' '[:lower:]'`
         case "${option}"
@@ -239,7 +243,7 @@ do
 			exit
 	    	   fi;;
                 i) if [ $input = 'fantain' ] || [ $input = 'srh' ]; then
-                        installation=$input
+                        installation=$input			
 		   else
 		  	errorhandling "Installation"  
                         exit
