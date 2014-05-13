@@ -67,14 +67,14 @@ function searchandreplace {
 	  search=$2
 	  replace=$3
 	  echo """$replace"""
-	  node substitute.js $search """$replace""" $filename  > $filename.tmp
-	  filesize=`stat -c %s $filename.tmp`
-	  if [ $filesize = 0 ]; then
-	  	echo "${newline}Unable to change the new environment in $filename"	
-		exit
-	  else
+	  substitute.js $search """$replace""" $filename  > $filename.tmp
+	  #filesize=`stat -c %s $filename.tmp`
+	  #if [ $filesize = 0 ]; then
+	  #	echo "${newline}Unable to change the new environment in $filename"	
+	#	exit
+	#  else
 		mv $filename.tmp $filename
-	  fi
+	#  fi
 }
 # Build Application for website
 function buildwebsite {
@@ -145,11 +145,16 @@ function initiatebuild {
 	replaceapkname=$(eval "echo \$$installation")
 	searchprojectname="(name=\")(.*?)(\")"
 	searchc2dpermission="(android:name=\")(.*?)(.permission.C2D_MESSAGE\")"
-	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then
-                replaceapkname="""$replaceapkname-$gittagname"""
-		replaceprojectname="$installation-$gittagname"
+	if [ $instance = 'dev' ]; then
+		if  [ -n "$gittagname" ]; then
+            replaceapkname="""DEV $gittagname"""
+			replaceprojectname="$installation-$gittagname"
         else
-                replaceapkname="""$replaceapkname"""
+            replaceapkname="""DEV"""
+			replaceprojectname="$installation"
+		fi
+	else
+    	replaceapkname="""$replaceapkname"""
 		replaceprojectname="$installation"
 	fi
 	searchversioncode="(versionCode=\")(.*?)(\")"
