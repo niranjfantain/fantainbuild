@@ -65,9 +65,16 @@ function checkfile() {
 function searchandreplace {
 	  filename=$1
 	  search=$2
-	  replace=$3	
-	  node substitute.js $search $replace $filename  > $filename.tmp
-	  mv $filename.tmp $filename
+	  replace=$3
+	  echo """$replace"""
+	  node substitute.js $search """$replace""" $filename  > $filename.tmp
+	  filesize=`stat -c %s $filename.tmp`
+	  if [ $filesize = 0 ]; then
+	  	echo "${newline}Unable to change the new environment in $filename"	
+		exit
+	  else
+		mv $filename.tmp $filename
+	  fi
 }
 # Build Application for website
 function buildwebsite {
@@ -88,7 +95,7 @@ function buildwebsite {
 # Build APK for mobiles
 function buildandroid {
 	searchandreplace $configxml $searchversion $replaceversion
-	searchandreplace $configxml $searchapkname $replaceapkname
+	searchandreplace $configxml $searchapkname """$replaceapkname"""
 	searchandreplace $Buildxml $searchprojectname $replaceprojectname
 	searchandreplace $AndroidManifestxml $searchversioncode $replaceversioncode
 	searchandreplace $AndroidManifestxml $searchc2dpermission $replacec2dpermission
@@ -139,10 +146,10 @@ function initiatebuild {
 	searchprojectname="(name=\")(.*?)(\")"
 	searchc2dpermission="(android:name=\")(.*?)(.permission.C2D_MESSAGE\")"
 	if [ $instance = 'dev' ] && [ -n "$gittagname" ]; then
-                replaceapkname="$replaceapkname-$gittagname"
+                replaceapkname="""$replaceapkname-$gittagname"""
 		replaceprojectname="$installation-$gittagname"
         else
-                replaceapkname="$replaceapkname"
+                replaceapkname="""$replaceapkname"""
 		replaceprojectname="$installation"
 	fi
 	searchversioncode="(versionCode=\")(.*?)(\")"
