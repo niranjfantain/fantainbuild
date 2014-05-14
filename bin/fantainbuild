@@ -68,13 +68,7 @@ function searchandreplace {
 	  replace=$3
 	  echo """$replace"""
 	  substitute.js $search """$replace""" $filename  > $filename.tmp
-	  #filesize=`stat -c %s $filename.tmp`
-	  #if [ $filesize = 0 ]; then
-	  #	echo "${newline}Unable to change the new environment in $filename"	
-	#	exit
-	#  else
-		mv $filename.tmp $filename
-	#  fi
+	  mv $filename.tmp $filename
 }
 # Build Application for website
 function buildwebsite {
@@ -118,7 +112,7 @@ function buildandroid {
 		fi
 	else
 		cordova build --release
-		cp "$project/platforms/android/ant-build/$installation-release.apk" "$project/apk"
+		cp "$project/platforms/android/ant-build/$installation-release.apk" "$project/apk/$replaceapkname-release.apk"
 	fi
 	echo "${newline}Get your new APK at $basedir/apk"
 }
@@ -147,14 +141,14 @@ function initiatebuild {
 	searchc2dpermission="(android:name=\")(.*?)(.permission.C2D_MESSAGE\")"
 	if [ $instance = 'dev' ]; then
 		if  [ -n "$gittagname" ]; then
-            replaceapkname="""DEV $gittagname"""
+            		replaceapkname="""DEV $gittagname"""
 			replaceprojectname="$installation-$gittagname"
         else
-            replaceapkname="""DEV"""
+            		replaceapkname="""DEV"""
 			replaceprojectname="$installation"
 		fi
 	else
-    	replaceapkname="""$replaceapkname"""
+    		replaceapkname="""$replaceapkname"""
 		replaceprojectname="$installation"
 	fi
 	searchversioncode="(versionCode=\")(.*?)(\")"
